@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Calculadora Média Secundário · Portugal</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:#F0EDE6;color:#18120A;min-height:100vh;font-size:15px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#CCC4B8;border-radius:3px}
+.fade{animation:fadeUp .22s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;border:none;transition:all .14s;line-height:1}
+.btn:hover{transform:translateY(-1px)}.btn:active{transform:translateY(0)}.btn:disabled{opacity:.38;cursor:not-allowed;transform:none}
+.btn-primary{background:#1B2E58;color:#fff}.btn-primary:hover:not(:disabled){background:#233672}
+.btn-ghost{background:#fff;color:#1B2E58;border:1.5px solid #C8BFB0}.btn-ghost:hover:not(:disabled){border-color:#1B2E58;background:#F5F1EB}
+.btn-sm{padding:7px 13px;font-size:12.5px;border-radius:8px}
+.btn-icon{padding:7px 11px;border-radius:8px;font-size:12.5px;border:1.5px solid #C8BFB0;background:#fff;color:#1B2E58;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-weight:600;font-family:'DM Sans',sans-serif;transition:all .14s}
+.btn-icon:hover{border-color:#1B2E58;background:#F5F1EB}
+/* Area cards */
+.area-card{padding:18px 20px;border-radius:13px;border:2px solid #DDD6CC;cursor:pointer;transition:all .14s;background:#fff;user-select:none}
+.area-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.area-card.sel{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+/* Disc chip */
+.disc-chip{display:flex;align-items:center;gap:9px;padding:10px 13px;border-radius:9px;border:1.5px solid #DDD6CC;cursor:pointer;transition:all .14s;background:#fff;user-select:none;min-width:0}
+.disc-chip:hover{border-color:#B8B0A4;background:#FAFAF7}
+.disc-chip.sel{border-color:#1B2E58;background:#EEF1F9}
+.disc-chip.fixed{border-color:#B8D8B8;background:#F0FBF0;cursor:default}
+/* Grade inputs */
+.ginput{width:50px;padding:6px 4px;border:1.5px solid #D4C9B8;border-radius:8px;font-size:14px;font-weight:700;text-align:center;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .14s;color:#18120A;background:#FAFAF7}
+.ginput:focus{border-color:#1B2E58;background:#fff;box-shadow:0 0 0 3px rgba(27,46,88,.1)}
+.ginput.exam{border-color:#A07C18;background:#FFFCF0}.ginput.exam:focus{border-color:#7B5E10}
+.ginput.ok{border-color:#15803D}.ginput.editing{border-color:#1B2E58;background:#fff}
+/* Range slider */
+input[type=range]{-webkit-appearance:none;width:100%;height:5px;border-radius:3px;background:#DDD6CC;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#1B2E58;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+/* Tags */
+.tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:5px;font-size:11px;font-weight:600;letter-spacing:.15px;white-space:nowrap;line-height:1.5}
+.t-tri{background:#DDE4F5;color:#1B2E58}.t-bi{background:#D7EEF0;color:#0B4D56}.t-an{background:#F0E8D7;color:#7A4A0A}
+.t-exam{background:#FEF3C7;color:#876010}.t-ano{background:#EEE8F5;color:#5B3D90}
+.t-red{background:#FDE8E8;color:#C0392B}.t-green{background:#DCFCE7;color:#15803D}
+/* Card */
+.card{background:#fff;border-radius:14px;padding:26px 28px;border:1px solid #E2D8CC;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.sec{font-size:10.5px;font-weight:700;color:#9B8F82;text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px}
+/* Info boxes */
+.ibox{border-radius:9px;padding:10px 14px;font-size:12.5px;line-height:1.5}
+.ibox.amber{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+.ibox.blue{background:#EEF3FF;border:1px solid #C3D0F0;color:#1B2E58}
+.ibox.green{background:#F0FDF4;border:1px solid #BBF7D0;color:#15803D}
+.ibox.red{background:#FEF2F2;border:1px solid #FECACA;color:#B91C1C}
+/* Disc cards step 4 */
+.dcard{background:#fff;border:1px solid #E2D8CC;border-radius:12px;padding:14px 16px;margin-bottom:9px}
+.dcard.he{border-left:3px solid #C8A028}
+/* Sim cards */
+.scard{background:#fff;border:1.5px solid #E2D8CC;border-radius:12px;padding:13px 16px;margin-bottom:8px;transition:all .14s}
+.scard.locked{background:#F8F5EF;border-color:#D4CAB8}
+/* Toolbar */
+.toolbar{background:#fff;border-bottom:1px solid #E2D8CC;padding:8px 0}
+/* Grade colour */
+.gc-ex{color:#0EA372}.gc-gd{color:#15803D}.gc-ok{color:#1D4ED8}.gc-ps{color:#D97706}.gc-fl{color:#DC2626}.gc-no{color:#9CA3AF}
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1B2E58;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;animation:toastIn .2s ease;pointer-events:none}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useMemo,useCallback,useEffect,useRef}=React;
+
+/* ══ DATA (unchanged) ═══════════════════════════════════════════════════════ */
+const AREAS=[
+  {id:'ct', label:'Ciências e Tecnologias',   sub:'Mat. A, Física e Química, Biologia...',    clr:'#1B5EDE'},
+  {id:'cse',label:'Ciências Socioeconómicas', sub:'Mat. A, Economia A, Geografia A...',       clr:'#0B7A6A'},
+  {id:'lh', label:'Línguas e Humanidades',    sub:'História A, Geografia, Latim, Línguas...', clr:'#6B28B8'},
+  {id:'av', label:'Artes Visuais',            sub:'Desenho A, Geom. Descritiva, Oficinas...', clr:'#B82828'},
+];
+const GERAL=[
+  {id:'port',name:'Português',         tp:'tri',anos:[10,11,12],hx:true, xa:12,mand:true},
+  {id:'le',  name:'Língua Estrangeira',tp:'bi', anos:[10,11],   hx:true, xa:11,mand:false},
+  {id:'fil', name:'Filosofia',         tp:'bi', anos:[10,11],   hx:true, xa:11,mand:false},
+  {id:'ef',  name:'Educação Física',   tp:'tri',anos:[10,11,12],hx:false,xa:null,mand:false},
+];
+const COURSES={
+  ct:{
+    tr:{id:'mata',name:'Matemática A',tp:'tri',anos:[10,11,12],hx:true,xa:12},
+    bi:[
+      {id:'fqa',name:'Física e Química A',    tp:'bi',anos:[10,11],hx:true,xa:11},
+      {id:'bg', name:'Biologia e Geologia',   tp:'bi',anos:[10,11],hx:true,xa:11},
+      {id:'gda',name:'Geometria Descritiva A',tp:'bi',anos:[10,11],hx:true,xa:11},
+    ],
+    an:[
+      {id:'bio12',name:'Biologia',         tp:'an',anos:[12],hx:true, xa:12,g:'b'},
+      {id:'fis12',name:'Física',           tp:'an',anos:[12],hx:true, xa:12,g:'b'},
+      {id:'qui12',name:'Química',          tp:'an',anos:[12],hx:true, xa:12,g:'b'},
+      {id:'geo12',name:'Geologia',         tp:'an',anos:[12],hx:true, xa:12,g:'b'},
+      {id:'matec',name:'Materiais e Tecnologias',tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'antro',name:'Antropologia',     tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'aib',  name:'Aplic. Informáticas B',tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'cpol', name:'Ciência Política', tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'claslit',name:'Clássicos da Literatura',tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'dir',  name:'Direito',          tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'ecoc', name:'Economia C',       tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'fila', name:'Filosofia A',      tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'geoc', name:'Geografia C',      tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'grego',name:'Grego',            tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'le12', name:'Língua Estrangeira',tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'psicb',name:'Psicologia B',     tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'teatro',name:'Teatro',          tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+    ]
+  },
+  cse:{
+    tr:{id:'mata',name:'Matemática A',tp:'tri',anos:[10,11,12],hx:true,xa:12},
+    bi:[
+      {id:'ecoa', name:'Economia A', tp:'bi',anos:[10,11],hx:true,xa:11},
+      {id:'geoa', name:'Geografia A',tp:'bi',anos:[10,11],hx:true,xa:11},
+      {id:'histb',name:'História B', tp:'bi',anos:[10,11],hx:true,xa:11},
+    ],
+    an:[
+      {id:'ecoc', name:'Economia C', tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'geoc', name:'Geografia C',tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'socio',name:'Sociologia', tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'antro',name:'Antropologia',tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'aib',  name:'Aplic. Informáticas B',tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'cpol', name:'Ciência Política',tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'claslit',name:'Clássicos da Literatura',tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'dir',  name:'Direito',    tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'fila', name:'Filosofia A',tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'grego',name:'Grego',      tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'le12', name:'Língua Estrangeira',tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'psicb',name:'Psicologia B',tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'teatro',name:'Teatro',    tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+    ]
+  },
+  lh:{
+    tr:{id:'hista',name:'História A',tp:'tri',anos:[10,11,12],hx:true,xa:12},
+    bi:[
+      {id:'macs',   name:'Mat. Aplic. às C. Sociais',tp:'bi',anos:[10,11],hx:true, xa:11},
+      {id:'geoa',   name:'Geografia A',              tp:'bi',anos:[10,11],hx:true, xa:11},
+      {id:'le2',    name:'Língua Estrangeira II/III', tp:'bi',anos:[10,11],hx:true, xa:11},
+      {id:'lata',   name:'Latim A',                  tp:'bi',anos:[10,11],hx:true, xa:11},
+      {id:'litport',name:'Literatura Portuguesa',     tp:'bi',anos:[10,11],hx:false,xa:null},
+    ],
+    an:[
+      {id:'fila',  name:'Filosofia A',                     tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'geoc',  name:'Geografia C',                     tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'latb',  name:'Latim B',                         tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'le12',  name:'Língua Estrangeira',              tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'litlp', name:'Literaturas de Língua Portuguesa',tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'psicb', name:'Psicologia B',                    tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'socio', name:'Sociologia',                      tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'antro', name:'Antropologia',                    tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'aib',   name:'Aplic. Informáticas B',           tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'cpol',  name:'Ciência Política',                tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'claslit',name:'Clássicos da Literatura',        tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'dir',   name:'Direito',                         tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'ecoc',  name:'Economia C',                      tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'grego', name:'Grego',                           tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'teatro',name:'Teatro',                          tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+    ]
+  },
+  av:{
+    tr:{id:'desa',name:'Desenho A',tp:'tri',anos:[10,11,12],hx:true,xa:12},
+    bi:[
+      {id:'gda', name:'Geometria Descritiva A',          tp:'bi',anos:[10,11],hx:true, xa:11},
+      {id:'matb',name:'Matemática B',                    tp:'bi',anos:[10,11],hx:true, xa:11},
+      {id:'hca', name:'História da Cultura e das Artes', tp:'bi',anos:[10,11],hx:false,xa:null},
+    ],
+    an:[
+      {id:'matec',name:'Materiais e Tecnologias',tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'ofart',name:'Oficina de Artes',       tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'ofdes',name:'Oficina de Design',      tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'ofmm', name:'Oficina Multimédia B',   tp:'an',anos:[12],hx:false,xa:null,g:'b'},
+      {id:'antro',name:'Antropologia',           tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'aib',  name:'Aplic. Informáticas B',  tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'cpol', name:'Ciência Política',       tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'claslit',name:'Clássicos da Literatura',tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'dir',  name:'Direito',                tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'ecoc', name:'Economia C',             tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'fila', name:'Filosofia A',            tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'geoc', name:'Geografia C',            tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'grego',name:'Grego',                  tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'le12', name:'Língua Estrangeira',     tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+      {id:'teatro',name:'Teatro',                tp:'an',anos:[12],hx:false,xa:null,g:'c'},
+    ]
+  }
+};
+
+/* ══ HELPERS ════════════════════════════════════════════════════════════════ */
+function pg(v){if(v===''||v===null||v===undefined)return null;const n=Number(v);return isNaN(n)?null:n;}
+function wt(tp){return tp==='tri'?3:tp==='bi'?2:1;}
+function gc(g){if(g===null||g===undefined)return'gc-no';if(g>=18)return'gc-ex';if(g>=16)return'gc-gd';if(g>=13)return'gc-ok';return'gc-ps';}
+function TL({tp}){
+  if(tp==='tri')return <span className="tag t-tri">trienal</span>;
+  if(tp==='bi') return <span className="tag t-bi">bienal</span>;
+  return <span className="tag t-an">anual</span>;
+}
+
+/* ══ GradeInput ══════════════════════════════════════════════════════════════
+   - Digits only; commits on Enter / Tab / blur
+   - 2nd valid digit: commit immediately, suppress blur-commit, advance focus
+   - setTimeout defers focus() so blur doesn't race React's state flush      */
+function GradeInput({value, onChange, isExam}){
+  const [draft,   setDraft]   = useState(value ?? '');
+  const [editing, setEditing] = useState(false);
+  const inputRef              = useRef(null);
+  // When set, the next blur must be ignored (advance already committed)
+  const suppressNextBlur      = useRef(false);
+
+  useEffect(()=>{
+    if(!editing) setDraft(value ?? '');
+  },[value, editing]);
+
+  function doCommit(raw){
+    setEditing(false);
+    if(!raw){ onChange(''); setDraft(''); return; }
+    let n = parseInt(raw, 10);
+    if(isNaN(n)){ onChange(''); setDraft(''); return; }
+    n = Math.min(20, Math.max(0, n));
+    onChange(String(n));
+    setDraft(String(n));
+  }
+
+  function handleChange(e){
+    const raw = e.target.value.replace(/\D/g,'').slice(0, 2);
+    setDraft(raw);
+
+    if(raw.length === 2){
+      const n = parseInt(raw, 10);
+      if(n >= 0 && n <= 20){
+        // Commit now — synchronously, before any blur fires
+        onChange(String(n));
+        setDraft(String(n));
+        setEditing(false);
+
+        // Capture next element reference NOW, before any re-render
+        const cur  = inputRef.current;
+        const all  = Array.from(document.querySelectorAll('.ginput'));
+        const next = all[all.indexOf(cur) + 1] || null;
+
+        if(next){
+          // suppressNextBlur must stay true until handleBlur consumes it.
+          // Do NOT reset it before calling focus() — focus() fires blur synchronously.
+          suppressNextBlur.current = true;
+          setTimeout(()=>{
+            next.focus();
+            next.select && next.select();
+          }, 0);
+        }
+      }
+    }
+  }
+
+  function handleKeyDown(e){
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      doCommit(draft.replace(/\D/g,''));
+    }
+    // Tab: let browser handle naturally; blur will commit
+  }
+
+  function handleBlur(){
+    if(suppressNextBlur.current){
+      suppressNextBlur.current = false; // consume flag — this is the blur triggered by auto-advance
+      return;
+    }
+    doCommit(draft.replace(/\D/g,''));
+  }
+
+  const borderCls = editing ? 'editing'
+    : (value === '' || value == null) ? '' : 'ok';
+
+  return(
+    <input
+      ref={inputRef}
+      type="text"
+      inputMode="numeric"
+      pattern="[0-9]*"
+      className={`ginput${isExam ? ' exam' : ''} ${borderCls}`}
+      value={draft}
+      placeholder="–"
+      onFocus={()=>setEditing(true)}
+      onChange={handleChange}
+      onKeyDown={handleKeyDown}
+      onBlur={handleBlur}
+    />
+  );
+}
+
+/* ══ DiscRow (step 4) — module-level so no remount on keystroke ═════════════ */
+function DiscRow({d, grades, setG}){
+  const g = grades[d.id]||{};
+  return(
+    <div className={`dcard${d.useExam?' he':''}`}>
+      <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:'10px',gap:'10px'}}>
+        <div>
+          <span style={{fontWeight:600,color:'#0C1B42',fontSize:'13.5px'}}>{d.name}</span>
+          <div style={{display:'flex',gap:'4px',marginTop:'3px',flexWrap:'wrap'}}>
+            <TL tp={d.tp}/>
+            {d.useExam&&<span className="tag t-exam">com exame</span>}
+            {d.mand&&<span className="tag t-red">exame obrig.</span>}
+          </div>
+        </div>
+        <div style={{textAlign:'right',flexShrink:0}}>
+          <div className={gc(d.cfd)} style={{fontSize:'30px',fontWeight:700,fontFamily:"'EB Garamond',serif",lineHeight:1}}>
+            {d.cfd!==null?d.cfd:'—'}
+          </div>
+          {d.cif!==null&&d.cif!==d.cfd&&<div style={{fontSize:'10.5px',color:'#9B8F82',marginTop:'1px'}}>CIF: {d.cif}</div>}
+        </div>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:'8px',flexWrap:'wrap'}}>
+        {d.anos.map(ano=>(
+          <div key={ano} style={{display:'flex',alignItems:'center',gap:'5px'}}>
+            <span className="tag t-ano">{ano}.º</span>
+            <GradeInput value={g[`y${ano}`]??''} onChange={v=>setG(d.id,`y${ano}`,v)}/>
+          </div>
+        ))}
+        {d.useExam&&(
+          <div style={{display:'flex',alignItems:'center',gap:'5px',paddingLeft:'10px',borderLeft:'2px solid #C8A028',marginLeft:'3px'}}>
+            <span className="tag t-exam">Exame</span>
+            <GradeInput isExam value={g['x']??''} onChange={v=>setG(d.id,'x',v)}/>
+          </div>
+        )}
+      </div>
+      {d.cif!==null&&d.eg!==null&&(
+        <div style={{marginTop:'7px',fontSize:'11.5px',color:'#876010',background:'#FEF9EC',borderRadius:'6px',padding:'4px 9px',display:'inline-block'}}>
+          arred((7,5×{d.cif}+2,5×{d.eg})/10) = <strong>{d.cfd}</strong>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ══ SimRow (step 5) — slider 10-20, val is always the truth ═══════════════
+   When locked: display val as fixed (whatever was set at lock time).
+   Inline number input uses the same draft/commit pattern as GradeInput.     */
+function SimRow({d, locked, onToggle, val, onValChange}){
+  const [draft,setDraft]    = useState(String(val??10));
+  const [editing,setEditing]= useState(false);
+
+  useEffect(()=>{
+    if(!editing) setDraft(String(val??10));
+  },[val,editing]);
+
+  function commitNum(){
+    setEditing(false);
+    const raw=draft.replace(/\D/g,'');
+    if(raw===''){onValChange(10);setDraft('10');return;}
+    let n=parseInt(raw,10);
+    if(isNaN(n)||n<10) n=10;
+    if(n>20) n=20;
+    onValChange(n);
+    setDraft(String(n));
+  }
+
+  const dg = val!==null&&val!==undefined ? val : 10;
+  return(
+    <div className={`scard${locked?' locked':''}`}>
+      <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontWeight:600,fontSize:'13px',color:locked?'#7B6F61':'#0C1B42',marginBottom:'2px',lineHeight:1.3}}>{d.name}</div>
+          <div style={{display:'flex',gap:'4px',alignItems:'center',flexWrap:'wrap'}}>
+            <TL tp={d.tp}/>
+            <span style={{fontSize:'10px',color:'#B0A898'}}>peso {wt(d.tp)}</span>
+          </div>
+        </div>
+        <div style={{textAlign:'center',minWidth:'50px',flexShrink:0}}>
+          <div className={locked?gc(dg):'gc-ok'} style={{fontSize:'28px',fontWeight:700,fontFamily:"'EB Garamond',serif",lineHeight:1}}>
+            {dg}
+          </div>
+          <div style={{fontSize:'9px',color:'#B0A898',marginTop:'1px',fontWeight:600,textTransform:'uppercase',letterSpacing:'.4px'}}>
+            {locked?'fixo':'livre'}
+          </div>
+        </div>
+        <button onClick={onToggle} style={{padding:'7px 12px',borderRadius:'8px',border:'1.5px solid',fontSize:'12px',fontWeight:600,cursor:'pointer',flexShrink:0,transition:'all .14s',
+          borderColor:locked?'#C8A028':'#C8BFB0',background:locked?'#FEF9EC':'#fff',color:locked?'#876010':'#7B6F61'}}>
+          {locked?'Fixo ✓':'Fixar'}
+        </button>
+      </div>
+      {!locked&&(
+        <div style={{marginTop:'12px',display:'flex',alignItems:'center',gap:'10px'}}>
+          <span style={{fontSize:'10.5px',color:'#A09589',width:'18px',textAlign:'right',flexShrink:0}}>10</span>
+          <input type="range" min="10" max="20" step="1"
+            value={dg}
+            onChange={e=>{const n=parseInt(e.target.value,10);onValChange(n);setDraft(String(n));}}
+            style={{flex:1}}
+          />
+          <span style={{fontSize:'10.5px',color:'#A09589',width:'18px',flexShrink:0}}>20</span>
+          <input type="text" inputMode="numeric" pattern="[0-9]*"
+            value={draft}
+            onFocus={()=>setEditing(true)}
+            onChange={e=>setDraft(e.target.value.replace(/\D/g,'').slice(0,2))}
+            onKeyDown={e=>{if(e.key==='Enter'||e.key==='Tab')commitNum();}}
+            onBlur={commitNum}
+            style={{width:'46px',padding:'5px 4px',border:`1.5px solid ${editing?'#1B2E58':'#D4C9B8'}`,borderRadius:'7px',
+              textAlign:'center',fontSize:'14px',fontWeight:700,fontFamily:'inherit',outline:'none',
+              color:'#18120A',background:editing?'#fff':'#FAFAF7'}}
+          />
+        </div>
+      )}
+      {locked&&(
+        <div style={{marginTop:'4px',fontSize:'10.5px',color:'#A09589'}}>
+          Nota fixada: {dg} · contribuição: {wt(d.tp)}×{dg}={wt(d.tp)*dg}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ══ TargetInput — média-alvo (module-level to avoid remount) ═══════════════ */
+function TargetInput({value, onChange}){
+  const [draft,setDraft]    = useState(value);
+  const [editing,setEditing]= useState(false);
+
+  useEffect(()=>{
+    if(!editing) setDraft(value);
+  },[value,editing]);
+
+  function commit(){
+    setEditing(false);
+    const raw=draft.replace(/\D/g,'');
+    if(raw===''){onChange('');setDraft('');return;}
+    let n=parseInt(raw,10);
+    if(isNaN(n)){onChange('');setDraft('');return;}
+    n=Math.min(20,Math.max(10,n));
+    onChange(String(n));
+    setDraft(String(n));
+  }
+
+  return(
+    <input type="text" inputMode="numeric" pattern="[0-9]*"
+      value={draft}
+      placeholder="ex: 16"
+      onFocus={()=>setEditing(true)}
+      onChange={e=>setDraft(e.target.value.replace(/\D/g,'').slice(0,2))}
+      onKeyDown={e=>{if(e.key==='Enter'||e.key==='Tab')commit();}}
+      onBlur={commit}
+      style={{width:'80px',padding:'8px 8px',borderRadius:'8px',outline:'none',textAlign:'center',
+        fontSize:'22px',fontWeight:700,fontFamily:"'EB Garamond',serif",color:'#0C1B42',
+        background:'#fff',
+        border:`1.5px solid ${editing?'#1B2E58':'#D4C9B8'}`,
+        boxShadow:editing?'0 0 0 3px rgba(27,46,88,.1)':'none'}}
+    />
+  );
+}
+
+/* ══ SaveModal — filename dialog for Firefox / fallback browsers ═════════════ */
+function SaveModal({csvContent, onClose}){
+  const [name,setName]=useState('NotasSecundário');
+  const inputRef=useRef(null);
+  useEffect(()=>{ setTimeout(()=>inputRef.current&&inputRef.current.select(),50); },[]);
+  function doSave(){
+    const fname=name.trim()||'NotasSecundário';
+    const blob=new Blob([csvContent],{type:'text/csv;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=fname.endsWith('.csv')?fname:fname+'.csv'; a.click();
+    URL.revokeObjectURL(url);
+    onClose(true);
+  }
+  return(
+    <div style={{position:'fixed',inset:0,background:'rgba(12,27,66,.45)',zIndex:200,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}}
+      onClick={e=>e.target===e.currentTarget&&onClose(false)}>
+      <div className="fade" style={{background:'#fff',borderRadius:'14px',padding:'24px 26px',width:'100%',maxWidth:'480px',boxShadow:'0 8px 40px rgba(0,0,0,.2)'}}>
+        <div style={{fontFamily:"'EB Garamond',serif",fontSize:'21px',fontWeight:600,color:'#0C1B42',marginBottom:'5px'}}>Guardar ficheiro CSV</div>
+        <p style={{fontSize:'12.5px',color:'#7B6F61',marginBottom:'16px',lineHeight:1.55}}>
+          Para escolher a pasta no <strong>Firefox</strong>, ativa a opção <em>«Perguntar onde guardar cada ficheiro»</em> em
+          {' '}<strong>☰ Definições → Geral → Ficheiros e Aplicações</strong>.
+        </p>
+        <label style={{fontSize:'11.5px',color:'#9B8F82',fontWeight:600,textTransform:'uppercase',letterSpacing:'.5px',display:'block',marginBottom:'5px'}}>Nome do ficheiro</label>
+        <div style={{display:'flex',alignItems:'center',gap:'6px',marginBottom:'18px'}}>
+          <input ref={inputRef} type="text" value={name}
+            onChange={e=>setName(e.target.value)}
+            onKeyDown={e=>e.key==='Enter'&&doSave()}
+            style={{flex:1,padding:'9px 12px',border:'1.5px solid #C8BFB0',borderRadius:'9px',fontSize:'14px',
+              fontFamily:'inherit',outline:'none',color:'#0C1B42'}}/>
+          <span style={{fontSize:'13px',color:'#9B8F82',flexShrink:0}}>.csv</span>
+        </div>
+        <div style={{display:'flex',gap:'8px',justifyContent:'flex-end'}}>
+          <button className="btn btn-ghost btn-sm" onClick={()=>onClose(false)}>Cancelar</button>
+          <button className="btn btn-primary btn-sm" onClick={doSave}>Guardar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══ WInput / GInput200 — module-level (no hooks-in-render) ═══════════════ */
+function WInput({value,onChange,min,max}){
+  const [d,setD]=useState(String(value??''));
+  useEffect(()=>setD(String(value??'')),[value]);
+  function commit(){
+    let n=parseInt(d,10);
+    if(isNaN(n))n=min!==undefined?min:0;
+    if(min!==undefined&&n<min)n=min;
+    if(max!==undefined&&n>max)n=max;
+    setD(String(n));onChange(n);
+  }
+  return(
+    <input type="text" inputMode="numeric" value={d}
+      style={{width:'52px',padding:'5px 4px',border:'1.5px solid #D4C9B8',borderRadius:'7px',
+        textAlign:'center',fontSize:'13px',fontWeight:700,fontFamily:'inherit',outline:'none',
+        color:'#18120A',background:'#FAFAF7'}}
+      onChange={e=>setD(e.target.value.replace(/\D/g,''))}
+      onBlur={commit}
+      onKeyDown={e=>{if(e.key==='Enter')e.target.blur();}}
+    />
+  );
+}
+function GInput200({value,onChange}){
+  const [d,setD]=useState(String(value??''));
+  useEffect(()=>setD(String(value??'')),[value]);
+  function commit(){
+    if(d===''){onChange('');return;}
+    let n=parseInt(d,10);
+    if(isNaN(n)){setD('');onChange('');return;}
+    n=Math.min(200,Math.max(0,n));
+    setD(String(n));onChange(String(n));
+  }
+  return(
+    <input type="text" inputMode="numeric" value={d} placeholder="0–200"
+      style={{width:'70px',padding:'6px 5px',border:'1.5px solid #D4C9B8',borderRadius:'8px',
+        textAlign:'center',fontSize:'14px',fontWeight:700,fontFamily:'inherit',outline:'none',
+        color:'#18120A',background:'#FAFAF7'}}
+      onChange={e=>setD(e.target.value.replace(/\D/g,'').slice(0,3))}
+      onBlur={commit}
+      onKeyDown={e=>{if(e.key==='Enter')e.target.blur();}}
+    />
+  );
+}
+
+/* ══ CURSOS_DB — CNA 2025 · 1ª e 2ª fase ════════════════════════════
+   n=nota 1ª fase · n2=nota 2ª fase · vagas25=vagas iniciais 1ª fase
+   v:true=verificado Excel DGES 2025                                */
+const CURSOS_DB=[
+{id:'u01a',u:'Universidade dos Açores',e:'Fac. Ciências e Tecnologia',c:'Ciclo Básico de Medicina',g:'PM',n:176.2,n2:182.8,vagas25:50,vagas26:null,v:true},
+{id:'u01b',u:'Universidade dos Açores',e:'Fac. Ciências Sociais e Humanas',c:'Psicologia',g:'L1',n:151.5,n2:141.5,vagas25:40,vagas26:null,v:true},
+{id:'u01c',u:'Universidade dos Açores',e:'Fac. Ciências Sociais e Humanas',c:'História',g:'L1',n:140.3,n2:142.0,vagas25:25,vagas26:null,v:true},
+{id:'u01d',u:'Universidade dos Açores',e:'Fac. Ciências Sociais e Humanas',c:'Educação Básica',g:'L1',n:141.5,n2:148.8,vagas25:27,vagas26:null,v:true},
+{id:'u01e',u:'Universidade dos Açores',e:'Fac. Ciências e Tecnologia',c:'Informática',g:'L1',n:144.8,n2:125.3,vagas25:26,vagas26:null,v:true},
+{id:'u01f',u:'Universidade dos Açores',e:'Fac. Ciências e Tecnologia',c:'Biologia',g:'L1',n:129.5,n2:125.3,vagas25:34,vagas26:null,v:true},
+{id:'u01g',u:'Universidade dos Açores',e:'Fac. Economia e Gestão',c:'Economia',g:'L1',n:145.8,n2:127.3,vagas25:16,vagas26:null,v:true},
+{id:'u01h',u:'Universidade dos Açores',e:'Fac. Economia e Gestão',c:'Gestão',g:'L1',n:112.3,n2:123.8,vagas25:50,vagas26:null,v:true},
+{id:'u01i',u:'Universidade dos Açores',e:'Fac. Ciências Sociais e Humanas',c:'Estudos Europeus',g:'L1',n:129.0,n2:113.5,vagas25:24,vagas26:null,v:true},
+{id:'u01j',u:'Universidade dos Açores',e:'Fac. Ciências Sociais e Humanas',c:'Serviço Social',g:'L1',n:112.5,n2:110.0,vagas25:38,vagas26:null,v:true},
+{id:'u02a',u:'Universidade do Algarve',e:'Fac. Ciências Humanas e Sociais',c:'Psicologia',g:'L1',n:156.0,n2:154.3,vagas25:65,vagas26:null,v:true},
+{id:'u02b',u:'Universidade do Algarve',e:'Fac. Ciências e Tecnologia',c:'Ciências Farmacêuticas',g:'MI',n:138.8,n2:129.5,vagas25:50,vagas26:null,v:true},
+{id:'u02c',u:'Universidade do Algarve',e:'Fac. Ciências e Tecnologia',c:'Biologia Marinha',g:'L1',n:116.8,n2:119.5,vagas25:64,vagas26:null,v:true},
+{id:'u02d',u:'Universidade do Algarve',e:'Fac. Ciências e Tecnologia',c:'Engenharia Informática',g:'L1',n:119.3,n2:112.8,vagas25:84,vagas26:null,v:true},
+{id:'u02e',u:'Universidade do Algarve',e:'Fac. Medicina e C. Biomédicas',c:'Ciências Biomédicas',g:'L1',n:143.0,n2:130.5,vagas25:53,vagas26:null,v:true},
+{id:'u02f',u:'Universidade do Algarve',e:'Fac. Economia',c:'Gestão de Empresas',g:'L1',n:127.0,n2:120.0,vagas25:70,vagas26:null,v:true},
+{id:'u02g',u:'Universidade do Algarve',e:'Fac. Ciências Humanas e Sociais',c:'Artes Visuais',g:'L1',n:125.8,n2:132.5,vagas25:27,vagas26:null,v:true},
+{id:'u02h',u:'Universidade do Algarve',e:'Fac. Economia',c:'Economia',g:'L1',n:117.8,n2:123.8,vagas25:28,vagas26:null,v:true},
+{id:'u02i',u:'Universidade do Algarve',e:'Fac. Ciências e Tecnologia',c:'Bioquímica',g:'L1',n:122.8,n2:119.0,vagas25:22,vagas26:null,v:true},
+{id:'u02j',u:'Universidade do Algarve',e:'Fac. Ciências e Tecnologia',c:'Biotecnologia',g:'L1',n:122.0,n2:117.8,vagas25:21,vagas26:null,v:true},
+{id:'u03a',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Medicina',g:'MI',n:182.8,n2:186.8,vagas25:40,vagas26:null,v:true},
+{id:'u03b',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Engenharia Aeroespacial',g:'L1',n:183.8,n2:189.3,vagas25:50,vagas26:null,v:true},
+{id:'u03c',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Psicologia',g:'L1',n:167.0,n2:168.8,vagas25:33,vagas26:null,v:true},
+{id:'u03d',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Ciências Biomédicas',g:'L1',n:166.3,n2:175.8,vagas25:77,vagas26:null,v:true},
+{id:'u03e',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Gestão',g:'L1',n:165.3,n2:166.3,vagas25:39,vagas26:null,v:true},
+{id:'u03f',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Engenharia Biomédica',g:'L1',n:160.3,n2:161.0,vagas25:37,vagas26:null,v:true},
+{id:'u03g',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Engenharia e Gestão Industrial',g:'L1',n:159.0,n2:155.3,vagas25:74,vagas26:null,v:true},
+{id:'u03h',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Engenharia Informática',g:'L1',n:158.5,n2:null,vagas25:78,vagas26:null,v:true},
+{id:'u03i',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Economia',g:'L1',n:158.5,n2:156.3,vagas25:47,vagas26:null,v:true},
+{id:'u03j',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Línguas e Relações Empresariais',g:'L1',n:156.3,n2:156.0,vagas25:70,vagas26:null,v:true},
+{id:'u03k',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Engenharia Mecânica',g:'L1',n:155.5,n2:156.0,vagas25:101,vagas26:null,v:true},
+{id:'u03l',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Design',g:'L1',n:153.5,n2:159.0,vagas25:52,vagas26:null,v:true},
+{id:'u03m',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Línguas, Literaturas e Culturas',g:'L1',n:152.3,n2:174.5,vagas25:28,vagas26:null,v:true},
+{id:'u03n',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Tradução',g:'L1',n:145.0,n2:144.8,vagas25:35,vagas26:null,v:true},
+{id:'u03o',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Engenharia Civil',g:'L1',n:144.0,n2:149.8,vagas25:25,vagas26:null,v:true},
+{id:'u03p',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Física',g:'L1',n:147.5,n2:123.3,vagas25:15,vagas26:null,v:true},
+{id:'u03q',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Educação Básica',g:'L1',n:149.3,n2:155.0,vagas25:53,vagas26:null,v:true},
+{id:'u03r',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Engenharia Química',g:'L1',n:125.8,n2:123.8,vagas25:39,vagas26:null,v:true},
+{id:'u03s',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Matemática',g:'L1',n:142.0,n2:139.5,vagas25:37,vagas26:null,v:true},
+{id:'u03t',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Administração Pública',g:'L1',n:140.8,n2:130.0,vagas25:55,vagas26:null,v:true},
+{id:'u03u',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Biologia',g:'L1',n:114.0,n2:null,vagas25:98,vagas26:null,v:true},
+{id:'u03v',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Engenharia do Ambiente',g:'L1',n:119.5,n2:120.0,vagas25:15,vagas26:null,v:true},
+{id:'u03w',u:'Universidade de Aveiro',e:'Universidade de Aveiro',c:'Engenharia Eletrotécnica e de Computadores',g:'L1',n:129.5,n2:135.3,vagas25:56,vagas26:null,v:true},
+{id:'u04a',u:'Universidade da Beira Interior',e:'Universidade da Beira Interior',c:'Medicina',g:'MI',n:177.2,n2:186.2,vagas25:150,vagas26:null,v:true},
+{id:'u04b',u:'Universidade da Beira Interior',e:'Universidade da Beira Interior',c:'Engenharia Aeronáutica',g:'L1',n:146.3,n2:161.8,vagas25:60,vagas26:null,v:true},
+{id:'u04c',u:'Universidade da Beira Interior',e:'Universidade da Beira Interior',c:'Psicologia',g:'L1',n:158.8,n2:161.0,vagas25:55,vagas26:null,v:true},
+{id:'u04d',u:'Universidade da Beira Interior',e:'Universidade da Beira Interior',c:'Ciência Política e Relações Internacionais',g:'L1',n:156.8,n2:160.8,vagas25:31,vagas26:null,v:true},
+{id:'u04e',u:'Universidade da Beira Interior',e:'Universidade da Beira Interior',c:'Gestão',g:'L1',n:145.1,n2:144.3,vagas25:81,vagas26:null,v:true},
+{id:'u04f',u:'Universidade da Beira Interior',e:'Universidade da Beira Interior',c:'Arquitetura',g:'MI',n:149.8,n2:159.5,vagas25:64,vagas26:null,v:true},
+{id:'u04g',u:'Universidade da Beira Interior',e:'Universidade da Beira Interior',c:'Engenharia Informática',g:'L1',n:117.8,n2:122.0,vagas25:80,vagas26:null,v:true},
+{id:'u04h',u:'Universidade da Beira Interior',e:'Universidade da Beira Interior',c:'Design de Moda',g:'L1',n:147.3,n2:155.5,vagas25:60,vagas26:null,v:true},
+{id:'u04i',u:'Universidade da Beira Interior',e:'Universidade da Beira Interior',c:'Ciências da Comunicação',g:'L1',n:129.9,n2:127.3,vagas25:68,vagas26:null,v:true},
+{id:'u04j',u:'Universidade da Beira Interior',e:'Universidade da Beira Interior',c:'Economia',g:'L1',n:123.8,n2:124.0,vagas25:49,vagas26:null,v:true},
+{id:'u04k',u:'Universidade da Beira Interior',e:'Universidade da Beira Interior',c:'Design Multimédia',g:'L1',n:135.5,n2:134.3,vagas25:49,vagas26:null,v:true},
+{id:'u04l',u:'Universidade da Beira Interior',e:'Universidade da Beira Interior',c:'Ciências Farmacêuticas',g:'MI',n:121.5,n2:119.5,vagas25:62,vagas26:null,v:true},
+{id:'u04m',u:'Universidade da Beira Interior',e:'Universidade da Beira Interior',c:'Ciências Biomédicas',g:'L1',n:122.3,n2:122.3,vagas25:72,vagas26:null,v:true},
+{id:'u05a',u:'Universidade de Coimbra',e:'Fac. Medicina',c:'Medicina',g:'MI',n:179.0,n2:187.3,vagas25:287,vagas26:null,v:true},
+{id:'u05b',u:'Universidade de Coimbra',e:'Fac. Medicina',c:'Medicina Dentária',g:'MI',n:177.8,n2:181.8,vagas25:60,vagas26:null,v:true},
+{id:'u05c',u:'Universidade de Coimbra',e:'Fac. Psicologia e C. Educação',c:'Psicologia',g:'L1',n:167.3,n2:176.8,vagas25:131,vagas26:null,v:true},
+{id:'u05d',u:'Universidade de Coimbra',e:'Fac. Economia',c:'Relações Internacionais',g:'L1',n:167.5,n2:166.5,vagas25:53,vagas26:null,v:true},
+{id:'u05e',u:'Universidade de Coimbra',e:'Fac. Ciências e Tecnologia',c:'Arquitetura',g:'MI',n:165.8,n2:175.8,vagas25:61,vagas26:null,v:true},
+{id:'u05f',u:'Universidade de Coimbra',e:'Fac. Direito',c:'Direito',g:'L1',n:165.0,n2:166.5,vagas25:340,vagas26:null,v:true},
+{id:'u05g',u:'Universidade de Coimbra',e:'Fac. Economia',c:'Gestão',g:'L1',n:161.5,n2:162.8,vagas25:90,vagas26:null,v:true},
+{id:'u05h',u:'Universidade de Coimbra',e:'Fac. Ciências e Tecnologia',c:'Engenharia Biomédica',g:'L1',n:155.0,n2:158.3,vagas25:64,vagas26:null,v:true},
+{id:'u05i',u:'Universidade de Coimbra',e:'Fac. Letras',c:'Jornalismo e Comunicação',g:'L1',n:157.0,n2:155.3,vagas25:52,vagas26:null,v:true},
+{id:'u05j',u:'Universidade de Coimbra',e:'Fac. Letras',c:'História',g:'L1',n:156.8,n2:153.8,vagas25:63,vagas26:null,v:true},
+{id:'u05k',u:'Universidade de Coimbra',e:'Fac. Ciências e Tecnologia',c:'Engenharia e Gestão Industrial',g:'L1',n:153.3,n2:166.3,vagas25:57,vagas26:null,v:true},
+{id:'u05l',u:'Universidade de Coimbra',e:'Fac. Economia',c:'Economia',g:'L1',n:152.3,n2:153.3,vagas25:151,vagas26:null,v:true},
+{id:'u05m',u:'Universidade de Coimbra',e:'Fac. Letras',c:'Estudos Europeus',g:'L1',n:154.8,n2:151.8,vagas25:35,vagas26:null,v:true},
+{id:'u05n',u:'Universidade de Coimbra',e:'Fac. Ciências e Tecnologia',c:'Inteligência Artificial e Ciência de Dados',g:'L1',n:145.5,n2:163.8,vagas25:40,vagas26:null,v:true},
+{id:'u05o',u:'Universidade de Coimbra',e:'Fac. Ciências e Tecnologia',c:'Engenharia Informática',g:'L1',n:145.3,n2:157.5,vagas25:156,vagas26:null,v:true},
+{id:'u05p',u:'Universidade de Coimbra',e:'Fac. Direito',c:'Administração Pública',g:'L1',n:146.3,n2:143.0,vagas25:41,vagas26:null,v:true},
+{id:'u05q',u:'Universidade de Coimbra',e:'Fac. Ciências e Tecnologia',c:'Design e Multimédia',g:'L1',n:147.8,n2:154.5,vagas25:77,vagas26:null,v:true},
+{id:'u05r',u:'Universidade de Coimbra',e:'Fac. Psicologia e C. Educação',c:'Serviço Social',g:'L1',n:144.3,n2:132.8,vagas25:32,vagas26:null,v:true},
+{id:'u05s',u:'Universidade de Coimbra',e:'Fac. Psicologia e C. Educação',c:'Ciências da Educação',g:'L1',n:141.0,n2:147.5,vagas25:73,vagas26:null,v:true},
+{id:'u05t',u:'Universidade de Coimbra',e:'Fac. Farmácia',c:'Ciências Farmacêuticas',g:'MI',n:138.5,n2:146.3,vagas25:212,vagas26:null,v:true},
+{id:'u05u',u:'Universidade de Coimbra',e:'Fac. Ciências e Tecnologia',c:'Engenharia Mecânica',g:'L1',n:135.0,n2:144.5,vagas25:109,vagas26:null,v:true},
+{id:'u05v',u:'Universidade de Coimbra',e:'Fac. Letras',c:'Português',g:'L1',n:145.8,n2:140.3,vagas25:36,vagas26:null,v:true},
+{id:'u05w',u:'Universidade de Coimbra',e:'Fac. Economia',c:'Sociologia',g:'L1',n:146.0,n2:151.0,vagas25:40,vagas26:null,v:true},
+{id:'u05x',u:'Universidade de Coimbra',e:'Fac. Ciências e Tecnologia',c:'Matemática',g:'L1',n:137.2,n2:137.9,vagas25:40,vagas26:null,v:true},
+{id:'u05y',u:'Universidade de Coimbra',e:'Fac. Letras',c:'Geografia',g:'L1',n:139.3,n2:138.5,vagas25:69,vagas26:null,v:true},
+{id:'u05z',u:'Universidade de Coimbra',e:'Fac. Ciências e Tecnologia',c:'Engenharia Civil',g:'L1',n:132.0,n2:null,vagas25:39,vagas26:null,v:true},
+{id:'u05aa',u:'Universidade de Coimbra',e:'Fac. Ciências Desporto e Ed. Física',c:'Ciências do Desporto',g:'L1',n:108.3,n2:127.3,vagas25:123,vagas26:null,v:true},
+{id:'u05ab',u:'Universidade de Coimbra',e:'Fac. Ciências e Tecnologia',c:'Engenharia Eletrotécnica e de Computadores',g:'L1',n:112.8,n2:131.8,vagas25:92,vagas26:null,v:true},
+{id:'u06a',u:'Universidade de Évora',e:'Escola de Ciências e Tecnologia',c:'Biologia',g:'L1',n:129.3,n2:125.5,vagas25:36,vagas26:null,v:true},
+{id:'u06b',u:'Universidade de Évora',e:'Escola de Ciências e Tecnologia',c:'Bioquímica',g:'L1',n:121.5,n2:115.3,vagas25:29,vagas26:null,v:true},
+{id:'u06c',u:'Universidade de Évora',e:'Escola de Ciências e Tecnologia',c:'Biologia Humana',g:'L1',n:119.5,n2:117.5,vagas25:29,vagas26:null,v:true},
+{id:'u06d',u:'Universidade de Évora',e:'Escola de Ciências e Tecnologia',c:'Medicina Veterinária',g:'MI',n:null,n2:169.8,vagas25:58,vagas26:null,v:true},
+{id:'u06e',u:'Universidade de Évora',e:'Escola de Ciências e Tecnologia',c:'Engenharia Aeroespacial',g:'L1',n:null,n2:139.0,vagas25:20,vagas26:null,v:true},
+{id:'u06f',u:'Universidade de Évora',e:'Escola de Ciências Sociais',c:'Psicologia',g:'L1',n:null,n2:160.5,vagas25:55,vagas26:null,v:true},
+{id:'u06g',u:'Universidade de Évora',e:'Escola de Ciências Sociais',c:'Gestão',g:'L1',n:null,n2:153.0,vagas25:70,vagas26:null,v:true},
+{id:'u06h',u:'Universidade de Évora',e:'Escola de Ciências Sociais',c:'Relações Internacionais',g:'L1',n:null,n2:149.0,vagas25:68,vagas26:null,v:true},
+{id:'u06i',u:'Universidade de Évora',e:'Escola de Ciências Sociais',c:'Economia',g:'L1',n:null,n2:120.5,vagas25:38,vagas26:null,v:true},
+{id:'u06j',u:'Universidade de Évora',e:'Escola de Artes',c:'Arquitetura',g:'MI',n:null,n2:163.0,vagas25:36,vagas26:null,v:true},
+{id:'u15a',u:'Universidade de Lisboa',e:'Instituto Superior Técnico',c:'Engenharia Aeroespacial',g:'L1',n:185.0,n2:192.5,vagas25:135,vagas26:null,v:true},
+{id:'u15b',u:'Universidade de Lisboa',e:'Instituto Superior Técnico',c:'Engenharia Informática e de Computadores',g:'L1',n:166.3,n2:180.8,vagas25:183,vagas26:null,v:true},
+{id:'u15c',u:'Universidade de Lisboa',e:'Instituto Superior Técnico',c:'Engenharia Mecânica',g:'L1',n:175.0,n2:183.5,vagas25:160,vagas26:null,v:true},
+{id:'u15d',u:'Universidade de Lisboa',e:'Instituto Superior Técnico',c:'Engenharia Eletrotécnica e de Computadores',g:'L1',n:140.0,n2:154.8,vagas25:220,vagas26:null,v:true},
+{id:'u15e',u:'Universidade de Lisboa',e:'Instituto Superior Técnico',c:'Engenharia Civil',g:'L1',n:141.3,n2:149.0,vagas25:138,vagas26:null,v:true},
+{id:'u15f',u:'Universidade de Lisboa',e:'Instituto Superior Técnico',c:'Engenharia Biomédica',g:'L1',n:174.0,n2:null,vagas25:102,vagas26:null,v:true},
+{id:'u15g',u:'Universidade de Lisboa',e:'Instituto Superior Técnico',c:'Engenharia Física Tecnológica',g:'L1',n:177.8,n2:null,vagas25:112,vagas26:null,v:true},
+{id:'u15h',u:'Universidade de Lisboa',e:'Instituto Superior Técnico',c:'Matemática Aplicada e Computação',g:'L1',n:167.3,n2:null,vagas25:68,vagas26:null,v:true},
+{id:'u15i',u:'Universidade de Lisboa',e:'Instituto Superior Técnico',c:'Engenharia Química',g:'L1',n:153.5,n2:155.0,vagas25:75,vagas26:null,v:true},
+{id:'u15j',u:'Universidade de Lisboa',e:'Instituto Superior Técnico',c:'Arquitetura',g:'MI',n:156.8,n2:167.3,vagas25:47,vagas26:null,v:true},
+{id:'u15k',u:'Universidade de Lisboa',e:'Instituto Superior Técnico',c:'Engenharia Biológica',g:'L1',n:156.8,n2:154.5,vagas25:61,vagas26:null,v:true},
+{id:'u15l',u:'Universidade de Lisboa',e:'Instituto Superior Técnico (Tagus Park)',c:'Engenharia e Gestão Industrial',g:'L1',n:168.5,n2:176.5,vagas25:81,vagas26:null,v:true},
+{id:'u15m',u:'Universidade de Lisboa',e:'Instituto Superior Técnico (Tagus Park)',c:'Engenharia Informática e de Computadores',g:'L1',n:136.3,n2:157.5,vagas25:90,vagas26:null,v:true},
+{id:'u16a',u:'Universidade de Lisboa',e:'Fac. Medicina',c:'Medicina',g:'MI',n:178.7,n2:184.5,vagas25:299,vagas26:null,v:true},
+{id:'u16b',u:'Universidade de Lisboa',e:'Fac. Medicina Dentária',c:'Medicina Dentária',g:'MI',n:177.8,n2:181.8,vagas25:70,vagas26:null,v:true},
+{id:'u17a',u:'Universidade de Lisboa',e:'Fac. Direito',c:'Direito',g:'L1',n:163.3,n2:165.5,vagas25:445,vagas26:null,v:true},
+{id:'u18a',u:'Universidade de Lisboa',e:'Fac. Ciências',c:'Engenharia Informática',g:'L1',n:134.3,n2:159.8,vagas25:105,vagas26:null,v:true},
+{id:'u18b',u:'Universidade de Lisboa',e:'Fac. Ciências',c:'Engenharia Biomédica e Biofísica',g:'L1',n:154.8,n2:162.8,vagas25:43,vagas26:null,v:true},
+{id:'u18c',u:'Universidade de Lisboa',e:'Fac. Ciências',c:'Bioquímica',g:'L1',n:141.8,n2:126.0,vagas25:70,vagas26:null,v:true},
+{id:'u18d',u:'Universidade de Lisboa',e:'Fac. Ciências',c:'Biologia',g:'L1',n:136.3,n2:137.3,vagas25:174,vagas26:null,v:true},
+{id:'u18e',u:'Universidade de Lisboa',e:'Fac. Ciências',c:'Matemática Aplicada',g:'L1',n:146.5,n2:144.3,vagas25:77,vagas26:null,v:true},
+{id:'u18f',u:'Universidade de Lisboa',e:'Fac. Ciências',c:'Física',g:'L1',n:146.5,n2:146.8,vagas25:40,vagas26:null,v:true},
+{id:'u18g',u:'Universidade de Lisboa',e:'Fac. Ciências',c:'Engenharia Física',g:'L1',n:153.5,n2:167.8,vagas25:40,vagas26:null,v:true},
+{id:'u19a',u:'Universidade de Lisboa',e:'ISEG',c:'Matemática Aplicada à Economia e Gestão',g:'L1',n:185.1,n2:184.0,vagas25:30,vagas26:null,v:true},
+{id:'u19b',u:'Universidade de Lisboa',e:'ISEG',c:'Gestão',g:'L1',n:167.1,n2:172.4,vagas25:137,vagas26:null,v:true},
+{id:'u19c',u:'Universidade de Lisboa',e:'ISEG',c:'Economia',g:'L1',n:161.9,n2:165.5,vagas25:132,vagas26:null,v:true},
+{id:'u19d',u:'Universidade de Lisboa',e:'ISEG',c:'Gestão (ensino em inglês)',g:'L1',n:171.0,n2:174.9,vagas25:60,vagas26:null,v:true},
+{id:'u19e',u:'Universidade de Lisboa',e:'ISEG',c:'Economia (ensino em inglês)',g:'L1',n:169.9,n2:177.2,vagas25:30,vagas26:null,v:true},
+{id:'u20a',u:'Universidade de Lisboa',e:'Fac. Arquitetura',c:'Arquitetura',g:'MI',n:161.3,n2:172.5,vagas25:209,vagas26:null,v:true},
+{id:'u20b',u:'Universidade de Lisboa',e:'Fac. Arquitetura',c:'Design',g:'L1',n:173.5,n2:180.8,vagas25:50,vagas26:null,v:true},
+{id:'u20c',u:'Universidade de Lisboa',e:'Fac. Arquitetura',c:'Design de Moda',g:'L1',n:164.5,n2:171.8,vagas25:50,vagas26:null,v:true},
+{id:'u21a',u:'Universidade de Lisboa',e:'Fac. Psicologia',c:'Psicologia',g:'L1',n:168.0,n2:172.0,vagas25:137,vagas26:null,v:true},
+{id:'u21b',u:'Universidade de Lisboa',e:'Fac. Farmácia',c:'Ciências Farmacêuticas',g:'MI',n:148.8,n2:151.8,vagas25:215,vagas26:null,v:true},
+{id:'u30a',u:'Universidade do Porto',e:'Fac. Engenharia (FEUP)',c:'Engenharia Aeroespacial',g:'L1',n:194.3,n2:null,vagas25:30,vagas26:null,v:true},
+{id:'u30b',u:'Universidade do Porto',e:'Fac. Engenharia (FEUP)',c:'Engenharia e Gestão Industrial',g:'L1',n:186.5,n2:193.5,vagas25:112,vagas26:null,v:true},
+{id:'u30c',u:'Universidade do Porto',e:'Fac. Engenharia (FEUP)',c:'Engenharia Informática e de Computação',g:'L1',n:167.3,n2:183.0,vagas25:284,vagas26:null,v:true},
+{id:'u30d',u:'Universidade do Porto',e:'Fac. Engenharia (FEUP)',c:'Engenharia Eletrotécnica e de Computadores',g:'L1',n:148.3,n2:175.5,vagas25:230,vagas26:null,v:true},
+{id:'u30e',u:'Universidade do Porto',e:'Fac. Engenharia (FEUP)',c:'Engenharia Mecânica',g:'L1',n:179.8,n2:187.5,vagas25:210,vagas26:null,v:true},
+{id:'u30f',u:'Universidade do Porto',e:'Fac. Engenharia (FEUP)',c:'Engenharia Civil',g:'L1',n:152.5,n2:157.3,vagas25:121,vagas26:null,v:true},
+{id:'u30g',u:'Universidade do Porto',e:'Fac. Engenharia (FEUP)',c:'Engenharia Química',g:'L1',n:165.3,n2:166.5,vagas25:63,vagas26:null,v:true},
+{id:'u30h',u:'Universidade do Porto',e:'Fac. Engenharia (FEUP)',c:'Bioengenharia',g:'L1',n:180.0,n2:186.5,vagas25:98,vagas26:null,v:true},
+{id:'u31a',u:'Universidade do Porto',e:'Fac. Medicina (FMUP)',c:'Medicina',g:'MI',n:185.3,n2:null,vagas25:275,vagas26:null,v:true},
+{id:'u31b',u:'Universidade do Porto',e:'ICBAS',c:'Medicina',g:'MI',n:184.7,n2:193.8,vagas25:155,vagas26:null,v:true},
+{id:'u31c',u:'Universidade do Porto',e:'Fac. Medicina Dentária',c:'Medicina Dentária',g:'MI',n:178.3,n2:183.0,vagas25:66,vagas26:null,v:true},
+{id:'u32a',u:'Universidade do Porto',e:'Fac. Economia (FEP)',c:'Gestão',g:'L1',n:178.0,n2:180.3,vagas25:208,vagas26:null,v:true},
+{id:'u32b',u:'Universidade do Porto',e:'Fac. Economia (FEP)',c:'Economia',g:'L1',n:172.3,n2:177.0,vagas25:208,vagas26:null,v:true},
+{id:'u33a',u:'Universidade do Porto',e:'Fac. Direito',c:'Direito',g:'L1',n:177.8,n2:177.3,vagas25:155,vagas26:null,v:true},
+{id:'u33b',u:'Universidade do Porto',e:'Fac. Direito',c:'Criminologia',g:'L1',n:164.0,n2:162.8,vagas25:46,vagas26:null,v:true},
+{id:'u34a',u:'Universidade do Porto',e:'Fac. Ciências (FCUP)',c:'Biologia',g:'L1',n:155.3,n2:152.3,vagas25:131,vagas26:null,v:true},
+{id:'u34b',u:'Universidade do Porto',e:'Fac. Ciências (FCUP)',c:'Bioquímica',g:'L1',n:151.3,n2:150.0,vagas25:92,vagas26:null,v:true},
+{id:'u34c',u:'Universidade do Porto',e:'Fac. Ciências (FCUP)',c:'Inteligência Artificial e Ciência de Dados',g:'L1',n:173.0,n2:176.5,vagas25:65,vagas26:null,v:true},
+{id:'u34d',u:'Universidade do Porto',e:'Fac. Ciências (FCUP)',c:'Ciência de Computadores',g:'L1',n:136.3,n2:157.3,vagas25:60,vagas26:null,v:true},
+{id:'u34e',u:'Universidade do Porto',e:'Fac. Ciências (FCUP)',c:'Matemática',g:'L1',n:145.0,n2:127.5,vagas25:56,vagas26:null,v:true},
+{id:'u34f',u:'Universidade do Porto',e:'Fac. Ciências (FCUP)',c:'Química',g:'L1',n:125.8,n2:121.3,vagas25:40,vagas26:null,v:true},
+{id:'u34g',u:'Universidade do Porto',e:'Fac. Psicologia e C. Educação',c:'Psicologia',g:'L1',n:174.0,n2:176.3,vagas25:123,vagas26:null,v:true},
+{id:'u35a',u:'Universidade do Porto',e:'Fac. Arquitetura',c:'Arquitetura',g:'MI',n:178.8,n2:191.8,vagas25:124,vagas26:null,v:true},
+{id:'u35b',u:'Universidade do Porto',e:'Fac. Farmácia',c:'Ciências Farmacêuticas',g:'MI',n:151.0,n2:158.5,vagas25:175,vagas26:null,v:true},
+{id:'u35c',u:'Universidade do Porto',e:'Fac. Letras',c:'Ciências da Comunicação',g:'L1',n:174.0,n2:171.3,vagas25:75,vagas26:null,v:true},
+{id:'u35d',u:'Universidade do Porto',e:'Fac. Letras',c:'Línguas e Relações Internacionais',g:'L1',n:171.5,n2:173.3,vagas25:80,vagas26:null,v:true},
+{id:'u35e',u:'Universidade do Porto',e:'Fac. Letras',c:'História',g:'L1',n:159.0,n2:156.0,vagas25:77,vagas26:null,v:true},
+{id:'u40a',u:'Universidade do Minho',e:'Escola de Engenharia',c:'Engenharia Aeroespacial',g:'L1',n:188.5,n2:null,vagas25:31,vagas26:null,v:true},
+{id:'u40b',u:'Universidade do Minho',e:'Escola de Medicina',c:'Medicina',g:'MI',n:183.5,n2:null,vagas25:122,vagas26:null,v:true},
+{id:'u40c',u:'Universidade do Minho',e:'Escola de Direito',c:'Direito',g:'L1',n:173.3,n2:174.5,vagas25:110,vagas26:null,v:true},
+{id:'u40d',u:'Universidade do Minho',e:'Escola de Psicologia',c:'Psicologia',g:'L1',n:169.8,n2:174.0,vagas25:67,vagas26:null,v:true},
+{id:'u40e',u:'Universidade do Minho',e:'Escola Economia e Gestão',c:'Gestão',g:'L1',n:168.8,n2:172.3,vagas25:94,vagas26:null,v:true},
+{id:'u40f',u:'Universidade do Minho',e:'Escola Economia e Gestão',c:'Economia',g:'L1',n:164.5,n2:163.3,vagas25:84,vagas26:null,v:true},
+{id:'u40g',u:'Universidade do Minho',e:'Escola de Engenharia',c:'Engenharia Informática',g:'L1',n:135.5,n2:157.0,vagas25:170,vagas26:null,v:true},
+{id:'u40h',u:'Universidade do Minho',e:'Escola de Engenharia',c:'Engenharia Mecânica',g:'L1',n:159.8,n2:168.8,vagas25:83,vagas26:null,v:true},
+{id:'u40i',u:'Universidade do Minho',e:'Escola de Engenharia',c:'Engenharia e Gestão Industrial',g:'L1',n:169.5,n2:174.0,vagas25:68,vagas26:null,v:true},
+{id:'u40j',u:'Universidade do Minho',e:'Escola de Arquitetura',c:'Arquitetura',g:'MI',n:172.8,n2:185.0,vagas25:55,vagas26:null,v:true},
+{id:'u40k',u:'Universidade do Minho',e:'Escola de Engenharia',c:'Engenharia Civil',g:'L1',n:148.3,n2:151.5,vagas25:34,vagas26:null,v:true},
+{id:'u40l',u:'Universidade do Minho',e:'Escola Economia e Gestão',c:'Negócios Internacionais',g:'L1',n:160.0,n2:162.5,vagas25:33,vagas26:null,v:true},
+{id:'u40m',u:'Universidade do Minho',e:'Escola de Engenharia',c:'Engenharia Biomédica',g:'L1',n:156.8,n2:158.5,vagas25:65,vagas26:null,v:true},
+{id:'u40n',u:'Universidade do Minho',e:'Escola Economia e Gestão',c:'Ciências da Comunicação',g:'L1',n:163.8,n2:162.8,vagas25:65,vagas26:null,v:true},
+{id:'u40o',u:'Universidade do Minho',e:'Escola de Engenharia',c:'Engenharia de Telecomunicações e Informática',g:'L1',n:121.5,n2:118.5,vagas25:36,vagas26:null,v:true},
+{id:'u40p',u:'Universidade do Minho',e:'Escola de Engenharia',c:'Ciências da Computação',g:'L1',n:118.0,n2:117.5,vagas25:77,vagas26:null,v:true},
+{id:'u50a',u:'Universidade Nova de Lisboa',e:'NOVA School of Business and Economics',c:'Economia',g:'L1',n:174.6,n2:181.6,vagas25:195,vagas26:null,v:true},
+{id:'u50b',u:'Universidade Nova de Lisboa',e:'NOVA School of Business and Economics',c:'Gestão',g:'L1',n:177.6,n2:184.2,vagas25:295,vagas26:null,v:true},
+{id:'u50c',u:'Universidade Nova de Lisboa',e:'Fac. Ciências Médicas (NMS|FCM)',c:'Medicina',g:'MI',n:180.3,n2:185.8,vagas25:231,vagas26:null,v:true},
+{id:'u50d',u:'Universidade Nova de Lisboa',e:'Fac. Ciências e Tecnologia (Nova FCT)',c:'Engenharia Biomédica',g:'L1',n:167.5,n2:179.3,vagas25:57,vagas26:null,v:true},
+{id:'u50e',u:'Universidade Nova de Lisboa',e:'Fac. Ciências e Tecnologia (Nova FCT)',c:'Engenharia Informática',g:'L1',n:138.5,n2:150.8,vagas25:170,vagas26:null,v:true},
+{id:'u50f',u:'Universidade Nova de Lisboa',e:'Fac. Ciências e Tecnologia (Nova FCT)',c:'Engenharia Mecânica',g:'L1',n:165.8,n2:172.8,vagas25:76,vagas26:null,v:true},
+{id:'u50g',u:'Universidade Nova de Lisboa',e:'Fac. Ciências e Tecnologia (Nova FCT)',c:'Engenharia e Gestão Industrial',g:'L1',n:163.8,n2:169.8,vagas25:55,vagas26:null,v:true},
+{id:'u50h',u:'Universidade Nova de Lisboa',e:'Fac. Ciências e Tecnologia (Nova FCT)',c:'Biologia Celular e Molecular',g:'L1',n:165.0,n2:167.5,vagas25:65,vagas26:null,v:true},
+{id:'u50i',u:'Universidade Nova de Lisboa',e:'Fac. Ciências e Tecnologia (Nova FCT)',c:'Bioquímica',g:'L1',n:148.3,n2:140.3,vagas25:80,vagas26:null,v:true},
+{id:'u50j',u:'Universidade Nova de Lisboa',e:'Fac. Ciências e Tecnologia (Nova FCT)',c:'Engenharia Física',g:'L1',n:170.8,n2:null,vagas25:25,vagas26:null,v:true},
+{id:'u50k',u:'Universidade Nova de Lisboa',e:'Fac. Direito',c:'Direito',g:'L1',n:178.0,n2:181.3,vagas25:100,vagas26:null,v:true},
+{id:'u50l',u:'Universidade Nova de Lisboa',e:'Fac. Ciências Sociais e Humanas (FCSH)',c:'Ciências da Comunicação',g:'L1',n:163.5,n2:158.3,vagas25:96,vagas26:null,v:true},
+{id:'u50m',u:'Universidade Nova de Lisboa',e:'Fac. Ciências Sociais e Humanas (FCSH)',c:'Ciência Política e Rel. Internacionais',g:'L1',n:170.5,n2:162.3,vagas25:99,vagas26:null,v:true},
+{id:'u50n',u:'Universidade Nova de Lisboa',e:'Fac. Ciências Sociais e Humanas (FCSH)',c:'História',g:'L1',n:161.3,n2:160.8,vagas25:45,vagas26:null,v:true},
+{id:'u50o',u:'Universidade Nova de Lisboa',e:'NOVA IMS',c:'Ciência de Dados',g:'L1',n:168.0,n2:171.8,vagas25:45,vagas26:null,v:true},
+{id:'u50p',u:'Universidade Nova de Lisboa',e:'NOVA IMS',c:'Gestão de Informação',g:'L1',n:131.5,n2:163.8,vagas25:64,vagas26:null,v:true},
+{id:'u60a',u:'ISCTE - Instituto Universitário de Lisboa',e:'ISCTE',c:'Gestão',g:'L1',n:164.5,n2:165.8,vagas25:176,vagas26:null,v:true},
+{id:'u60b',u:'ISCTE - Instituto Universitário de Lisboa',e:'ISCTE',c:'Economia',g:'L1',n:162.0,n2:161.5,vagas25:72,vagas26:null,v:true},
+{id:'u60c',u:'ISCTE - Instituto Universitário de Lisboa',e:'ISCTE',c:'Psicologia',g:'L1',n:166.5,n2:169.8,vagas25:110,vagas26:null,v:true},
+{id:'u60d',u:'ISCTE - Instituto Universitário de Lisboa',e:'ISCTE',c:'Engenharia Informática',g:'L1',n:150.8,n2:159.3,vagas25:90,vagas26:null,v:true},
+{id:'u60e',u:'ISCTE - Instituto Universitário de Lisboa',e:'ISCTE',c:'Arquitetura',g:'MI',n:161.0,n2:176.5,vagas25:51,vagas26:null,v:true},
+{id:'u60f',u:'ISCTE - Instituto Universitário de Lisboa',e:'ISCTE',c:'Gestão de Marketing',g:'L1',n:160.5,n2:162.0,vagas25:40,vagas26:null,v:true},
+{id:'u60g',u:'ISCTE - Instituto Universitário de Lisboa',e:'ISCTE',c:'Ciência de Dados',g:'L1',n:157.8,n2:157.0,vagas25:60,vagas26:null,v:true},
+{id:'u60h',u:'ISCTE - Instituto Universitário de Lisboa',e:'ISCTE',c:'Engenharia de Telecomunicações e Informática',g:'L1',n:131.5,n2:144.0,vagas25:60,vagas26:null,v:true},
+{id:'u60i',u:'ISCTE - Instituto Universitário de Lisboa',e:'ISCTE',c:'Informática e Gestão de Empresas',g:'L1',n:155.8,n2:156.5,vagas25:60,vagas26:null,v:true},
+{id:'u60j',u:'ISCTE - Instituto Universitário de Lisboa',e:'ISCTE',c:'Gestão de Recursos Humanos',g:'L1',n:165.5,n2:164.0,vagas25:41,vagas26:null,v:true},
+{id:'u60k',u:'ISCTE - Instituto Universitário de Lisboa',e:'ISCTE',c:'Finanças e Contabilidade',g:'L1',n:157.3,n2:158.5,vagas25:72,vagas26:null,v:true},
+];
+const PROVAS_INGRESSO=[
+  {id:'port12', name:'Português (12.º)',                code:'639'},
+  {id:'mata12', name:'Matemática A (12.º)',             code:'635'},
+  {id:'fqa11',  name:'Física e Química A (11.º)',       code:'715'},
+  {id:'bg11',   name:'Biologia e Geologia (11.º)',      code:'702'},
+  {id:'gda11',  name:'Geometria Descritiva A (11.º)',   code:'712'},
+  {id:'bio12',  name:'Biologia (12.º)',                 code:'701'},
+  {id:'fis12',  name:'Física (12.º)',                   code:'714'},
+  {id:'qui12',  name:'Química (12.º)',                  code:'716'},
+  {id:'geo12',  name:'Geologia (12.º)',                 code:'717'},
+  {id:'macs11', name:'Mat. Aplic. às C. Sociais (11.º)',code:'835'},
+  {id:'matb',   name:'Matemática B (12.º)',             code:'619'},
+  {id:'ecoa11', name:'Economia A (11.º)',               code:'820'},
+  {id:'geoa11', name:'Geografia A (11.º)',              code:'719'},
+  {id:'hista11',name:'História A (11.º)',               code:'640'},
+  {id:'hista12',name:'História A (12.º)',               code:'641'},
+  {id:'fil11',  name:'Filosofia (11.º)',                code:'557'},
+  {id:'desa12', name:'Desenho A (12.º)',                code:'332'},
+  {id:'gdb11',  name:'Geometria Descritiva B (11.º)',   code:'400'},
+  {id:'hca12',  name:'Hist. Cultura e das Artes (12.º)',code:'403'},
+  {id:'ing11',  name:'Inglês (11.º)',                   code:'367'},
+  {id:'fra11',  name:'Francês (11.º)',                  code:'347'},
+  {id:'esp11',  name:'Espanhol (11.º)',                 code:'375'},
+  {id:'lata11', name:'Latim A (11.º)',                  code:'323'},
+  {id:'litport',name:'Literatura Portuguesa (12.º)',    code:'605'},
+];
+function Toast({msg}){
+  if(!msg) return null;
+  return <div className="toast">{msg}</div>;
+}
+
+/* ══ APP ════════════════════════════════════════════════════════════════════ */
+function App(){
+  const [step,    setStep]    = useState(1);
+  const [maxStep, setMaxStep] = useState(1);
+  const [area,    setArea]    = useState(null);
+  const [biSel,   setBiSel]   = useState([]);
+  const [anSel,   setAnSel]   = useState([]);
+  const [xSel,    setXSel]    = useState({});
+  const [grades,  setGrades]  = useState({});
+  // Step 5
+  const [simLocked,setSimLocked]=useState(new Set());
+  const [simVals,  setSimVals]  =useState({});
+  const [targetCFC,setTargetCFC]=useState('');
+  // Toast + Save modal
+  const [toast,    setToast]   = useState('');
+  const [saveModal,setSaveModal]= useState(null); // null | csvString
+  const [showAcerca,setShowAcerca]= useState(false);
+  const toastTimer              = useRef(null);
+  // File input ref
+  const fileRef = useRef();
+
+  function goStep(n){
+    setStep(n);
+    setMaxStep(ms=>Math.max(ms,n));
+  }
+
+  const course = area ? COURSES[area] : null;
+  const aInfo  = AREAS.find(a=>a.id===area);
+
+  const allDiscs = useMemo(()=>{
+    if(!course) return [];
+    return[...GERAL, course.tr,
+      ...course.bi.filter(b=>biSel.includes(b.id)),
+      ...course.an.filter(a=>anSel.includes(a.id))];
+  },[course,biSel,anSel]);
+
+  const calc = useMemo(()=>allDiscs.map(d=>{
+    const g       = grades[d.id]||{};
+    const useExam = d.hx && (d.mand || !!xSel[d.id]);
+    const yv      = d.anos.map(a=>pg(g[`y${a}`]));
+    const full    = yv.every(v=>v!==null);
+    let cif=null,cfd=null,eg=null;
+    if(full){
+      cif = Math.round(yv.reduce((s,v)=>s+v,0)/yv.length);
+      if(useExam){
+        const ev=pg(g['x']);
+        if(ev!==null){eg=ev; cfd=Math.round((7.5*cif+2.5*ev)/10);}
+        else cfd=cif;
+      } else cfd=cif;
+    }
+    return{...d,cif,cfd,eg,useExam};
+  }),[allDiscs,grades,xSel]);
+
+  const mf = useMemo(()=>{
+    const f=calc.filter(c=>c.cfd!==null);
+    if(!f.length)return null;
+    return(f.reduce((s,c)=>s+wt(c.tp)*c.cfd,0)/f.reduce((s,c)=>s+wt(c.tp),0)).toFixed(2);
+  },[calc]);
+
+  const filled = calc.filter(c=>c.cfd!==null).length;
+
+  const setG = useCallback((did,k,v)=>{
+    setGrades(g=>({...g,[did]:{...(g[did]||{}),[k]:v}}));
+  },[]);
+
+  function showToast(msg){
+    setToast(msg);
+    if(toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current=setTimeout(()=>setToast(''),2500);
+  }
+
+  function enterSim(){
+    const sv={};
+    calc.forEach(d=>{sv[d.id]=d.cfd!==null?d.cfd:10;});
+    setSimVals(sv);
+    setSimLocked(new Set());
+    goStep(5);
+  }
+
+  const reset=()=>{setStep(1);setMaxStep(1);setArea(null);setBiSel([]);setAnSel([]);setXSel({});setGrades({});setSimLocked(new Set());setSimVals({});setTargetCFC('');setSelCourses([]);setFilterU('');setFilterE('');setFilterQ('');};
+  const chArea=(id)=>{setArea(id);setBiSel([]);setAnSel([]);setXSel({});setGrades({});};
+  const togBi=(id)=>setBiSel(s=>s.includes(id)?s.filter(x=>x!==id):s.length>=2?s:[...s,id]);
+  const togAn=(id)=>setAnSel(s=>s.includes(id)?s.filter(x=>x!==id):s.length>=2?s:[...s,id]);
+
+  /* ── CSV helpers ── */
+  function buildCSV(){
+    const rows=[['chave','valor']];
+    if(area)           rows.push(['area', area]);
+    if(biSel.length)   rows.push(['bienais', biSel.join('|')]);
+    if(anSel.length)   rows.push(['anuais',  anSel.join('|')]);
+    // exames seleccionados (não obrigatórios)
+    Object.entries(xSel).forEach(([k,v])=>{ if(v) rows.push([`exame_${k}`,'1']); });
+    // notas
+    Object.entries(grades).forEach(([did,gobj])=>{
+      Object.entries(gobj).forEach(([k,v])=>{
+        if(v!==''&&v!==null&&v!==undefined) rows.push([`nota_${did}_${k}`, v]);
+      });
+    });
+    // ── candidatura ao ensino superior ──
+    rows.push(['cand_regime',    regra2025?'2026':'anterior']);
+    rows.push(['cand_pesoSec',   String(pesoSec)]);
+    if(cfcManual!=='') rows.push(['cand_cfcManual', cfcManual]);
+    provas200.forEach((p,i)=>{
+      rows.push([`cand_prova${i}_pid`,    p.pid]);
+      rows.push([`cand_prova${i}_grade`,  p.grade]);
+      rows.push([`cand_prova${i}_weight`, String(p.weight)]);
+    });
+    rows.push(['cand_numProvas', String(provas200.length)]);
+    if(preReqWeight>0){
+      rows.push(['cand_preReqWeight', String(preReqWeight)]);
+      rows.push(['cand_preReqGrade',  preReqGrade]);
+    }
+    return rows.map(r=>r.map(c=>(/[,"\n]/.test(String(c))?`"${String(c).replace(/"/g,'""')}"`:String(c))).join(',')).join('\r\n');
+  }
+
+  function parseCSV(text){
+    const lines=text.split(/\r?\n/).filter(l=>l.trim());
+    const data={area:null,biSel:[],anSel:[],xSel:{},grades:{},cand:{}};
+    // skip header row
+    for(let i=1;i<lines.length;i++){
+      const [rawKey,...rest]=lines[i].split(',');
+      const key=rawKey.replace(/^"|"$/g,'').trim();
+      const val=rest.join(',').replace(/^"|"$/g,'').trim();
+      if(!key||val===undefined) continue;
+      if(key==='area')    { data.area=val; }
+      else if(key==='bienais') { data.biSel=val.split('|').filter(Boolean); }
+      else if(key==='anuais')  { data.anSel=val.split('|').filter(Boolean); }
+      else if(key.startsWith('exame_')){ const id=key.slice(6); if(val==='1') data.xSel[id]=true; }
+      else if(key.startsWith('nota_')){
+        const parts=key.slice(5).split('_');
+        const gradeKey=parts[parts.length-1];
+        const did=parts.slice(0,-1).join('_');
+        if(!data.grades[did]) data.grades[did]={};
+        data.grades[did][gradeKey]=val;
+      }
+      else if(key.startsWith('cand_')){ data.cand[key.slice(5)]=val; }
+    }
+    return data;
+  }
+
+  /* ── Save — picker for Chrome/Edge; modal for Firefox / others ── */
+  async function saveFile(){
+    const csv=buildCSV();
+    if(window.showSaveFilePicker){
+      try{
+        const fh=await window.showSaveFilePicker({
+          suggestedName:'NotasSecundário.csv',
+          types:[{description:'Ficheiro CSV',accept:{'text/csv':['.csv']}}],
+        });
+        const w=await fh.createWritable();
+        await w.write(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+        await w.close();
+        showToast('Ficheiro guardado ✓');
+        return;
+      } catch(err){
+        if(err.name==='AbortError') return;
+      }
+    }
+    setSaveModal(csv);
+  }
+
+  /* ── Load ── */
+  function loadFile(e){
+    const file=e.target.files?.[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=(ev)=>{
+      try{
+        const data=parseCSV(ev.target.result);
+        // Secundário
+        if(data.area) setArea(data.area);
+        setBiSel(data.biSel);
+        setAnSel(data.anSel);
+        setXSel(data.xSel);
+        setGrades(data.grades);
+        // Candidatura
+        const c=data.cand;
+        if(c.regime!==undefined)    setRegra2025(c.regime==='2026');
+        if(c.pesoSec!==undefined)   setPesoSec(parseInt(c.pesoSec,10)||60);
+        if(c.cfcManual!==undefined) setCfcManual(c.cfcManual);
+        if(c.preReqWeight!==undefined) setPreReqWeight(parseInt(c.preReqWeight,10)||0);
+        if(c.preReqGrade!==undefined)  setPreReqGrade(c.preReqGrade);
+        const numP=parseInt(c.numProvas,10);
+        if(!isNaN(numP)&&numP>=1&&numP<=3){
+          const rebuilt=[];
+          for(let i=0;i<numP;i++){
+            rebuilt.push({
+              pid:    c[`prova${i}_pid`]    ?? '',
+              grade:  c[`prova${i}_grade`]  ?? '',
+              weight: parseInt(c[`prova${i}_weight`],10)||15,
+            });
+          }
+          setProvas200(rebuilt);
+        }
+        const target=data.area?4:1;
+        goStep(target);
+        showToast('Ficheiro carregado ✓');
+      } catch{
+        showToast('Erro: ficheiro inválido');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value='';
+  }
+
+  /* ── Simulator calcs ── */
+  const simCFC = useMemo(()=>{
+    if(!calc.length) return null;
+    let num=0,den=0;
+    calc.forEach(d=>{
+      const g=simLocked.has(d.id)?(d.cfd!==null?d.cfd:0):(simVals[d.id]??10);
+      num+=wt(d.tp)*g; den+=wt(d.tp);
+    });
+    return den?(num/den).toFixed(2):null;
+  },[calc,simLocked,simVals]);
+
+  const neededGrade=useMemo(()=>{
+    const t=parseFloat(targetCFC);
+    if(isNaN(t)||t<10||t>20) return null;
+    let lNum=0,lDen=0,uDen=0;
+    calc.forEach(d=>{
+      if(simLocked.has(d.id)){lNum+=wt(d.tp)*(d.cfd!==null?d.cfd:0);lDen+=wt(d.tp);}
+      else uDen+=wt(d.tp);
+    });
+    if(uDen===0) return null;
+    return(t*(lDen+uDen)-lNum)/uDen;
+  },[calc,simLocked,targetCFC]);
+
+  const [selCourses, setSelCourses] = useState([]);   // array of course ids
+  const [sortCol,    setSortCol]    = useState('n');   // 'c'|'u'|'vagas25'|'vagas26'|'n'|'n2'
+  const [sortDir,    setSortDir]    = useState(-1);    // 1=asc  -1=desc
+  const [phase,      setPhase]      = useState(1);     // 1 = 1ª fase, 2 = 2ª fase
+  const [filterU,    setFilterU]    = useState('');
+  const [filterE,    setFilterE]    = useState('');
+  const [filterQ,    setFilterQ]    = useState('');
+
+  const STEPS=['Área','Disciplinas','Exames','Notas','Candidatura','Cursos'];
+  const STEP_IDS=[1,2,3,4,6,7]; // actual step values (step 5 = Simulador, hidden from bar)
+
+  /* ── Toolbar: save/load — always visible ── */
+  function Toolbar(){
+    return(
+      <div className="toolbar">
+        <div style={{maxWidth:'1100px',margin:'0 auto',padding:'0 16px',display:'flex',gap:'8px',alignItems:'center',flexWrap:'wrap'}}>
+          <span style={{fontSize:'11px',color:'#9B8F82',marginRight:'4px',fontWeight:600,textTransform:'uppercase',letterSpacing:'.5px'}}>Configuração:</span>
+          <button className="btn-icon" onClick={saveFile}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Guardar
+          </button>
+          <button className="btn-icon" onClick={()=>fileRef.current.click()}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Carregar
+          </button>
+          <input ref={fileRef} type="file" accept=".csv,text/csv" style={{display:'none'}} onChange={loadFile}/>
+          <button className="btn-icon" onClick={()=>setShowAcerca(true)} style={{marginLeft:'auto',color:'#7B6F61'}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            Acerca
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+
+  /* ── Step 1 ── */
+  function S1(){return(
+    <div className="fade">
+      <h2 style={{fontFamily:"'EB Garamond',serif",fontSize:'26px',fontWeight:600,color:'#0C1B42',marginBottom:'4px'}}>Qual é a tua área?</h2>
+      <p style={{color:'#7B6F61',fontSize:'13px',marginBottom:'22px'}}>Seleciona o curso científico-humanístico que frequentaste.</p>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px'}}>
+        {AREAS.map(a=>(
+          <div key={a.id} className={`area-card${area===a.id?' sel':''}`}
+            style={{borderColor:area===a.id?a.clr:'#DDD6CC',background:area===a.id?`${a.clr}10`:'#fff'}}
+            onClick={()=>chArea(a.id)}>
+            <div style={{width:'28px',height:'28px',borderRadius:'7px',background:`${a.clr}18`,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'10px'}}>
+              <div style={{width:'10px',height:'10px',borderRadius:'2px',background:a.clr}}/>
+            </div>
+            <div style={{fontWeight:600,color:'#0C1B42',fontSize:'13.5px',marginBottom:'2px',lineHeight:1.3}}>{a.label}</div>
+            <div style={{fontSize:'11.5px',color:'#A09589'}}>{a.sub}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{display:'flex',justifyContent:'flex-end',marginTop:'20px'}}>
+        <button className="btn btn-primary" disabled={!area} onClick={()=>goStep(2)}>Continuar →</button>
+      </div>
+    </div>
+  );}
+
+  /* ── Step 2 ── */
+  function S2(){
+    if(!course) return null;
+    const anB=course.an.filter(a=>a.g==='b');
+    const anC=course.an.filter(a=>a.g==='c');
+    const hasB=anSel.some(id=>anB.find(d=>d.id===id));
+    return(
+      <div className="fade">
+        <h2 style={{fontFamily:"'EB Garamond',serif",fontSize:'26px',fontWeight:600,color:'#0C1B42',marginBottom:'4px'}}>Disciplinas</h2>
+        <p style={{color:'#7B6F61',fontSize:'13px',marginBottom:'20px'}}>Geral e trienal são fixas. Escolhe 2 bienais e 2 anuais do 12.º.</p>
+        <div className="sec">Formação geral — fixas</div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px',marginBottom:'18px'}}>
+          {GERAL.map(d=>(
+            <div key={d.id} className="disc-chip fixed">
+              <span style={{width:'15px',height:'15px',borderRadius:'50%',background:'#15803D',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'8px',color:'#fff',fontWeight:700}}>✓</span>
+              <span style={{fontSize:'12px',fontWeight:500,color:'#1B2E58',flex:1,lineHeight:1.3}}>{d.name}</span>
+              <TL tp={d.tp}/>
+            </div>
+          ))}
+        </div>
+        <div className="sec">Trienal específica — fixa</div>
+        <div style={{marginBottom:'18px'}}>
+          <div className="disc-chip fixed" style={{display:'inline-flex',maxWidth:'100%'}}>
+            <span style={{width:'15px',height:'15px',borderRadius:'50%',background:'#15803D',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'8px',color:'#fff',fontWeight:700}}>✓</span>
+            <span style={{fontSize:'13px',fontWeight:600,color:'#1B2E58',flex:1}}>{course.tr.name}</span>
+            <TL tp={course.tr.tp}/>
+          </div>
+        </div>
+        <div className="sec">Bienais específicas — escolhe 2</div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px',marginBottom:'6px'}}>
+          {course.bi.map(d=>{const s=biSel.includes(d.id);const dis=!s&&biSel.length>=2;return(
+            <div key={d.id} className={`disc-chip${s?' sel':''}`} style={{opacity:dis?.5:1,cursor:dis?'not-allowed':'pointer'}} onClick={()=>!dis&&togBi(d.id)}>
+              <input type="checkbox" checked={s} readOnly style={{width:'14px',height:'14px',accentColor:'#1B2E58',flexShrink:0}}/>
+              <span style={{fontSize:'12px',fontWeight:500,color:'#0C1B42',flex:1,lineHeight:1.3}}>{d.name}</span>
+              <TL tp={d.tp}/>
+            </div>
+          );})}
+        </div>
+        <p style={{fontSize:'11.5px',marginBottom:'18px',color:biSel.length===2?'#15803D':'#A09589'}}>{biSel.length===2?'✓ 2 bienais selecionadas.':`Seleciona ${2-biSel.length} mais.`}</p>
+        <div className="sec">Anuais 12.º — escolhe 2 (≥1 do grupo principal)</div>
+        {anB.length>0&&<>
+          <div style={{fontSize:'11.5px',color:'#6B5F55',fontWeight:500,marginBottom:'6px'}}>Grupo principal</div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px',marginBottom:'10px'}}>
+            {anB.map(d=>{const s=anSel.includes(d.id);const dis=!s&&anSel.length>=2;return(
+              <div key={d.id} className={`disc-chip${s?' sel':''}`} style={{opacity:dis?.5:1,cursor:dis?'not-allowed':'pointer'}} onClick={()=>!dis&&togAn(d.id)}>
+                <input type="checkbox" checked={s} readOnly style={{width:'14px',height:'14px',accentColor:'#1B2E58',flexShrink:0}}/>
+                <span style={{fontSize:'12px',fontWeight:500,color:'#0C1B42',flex:1,lineHeight:1.3}}>{d.name}</span>
+                <TL tp={d.tp}/>
+              </div>
+            );})}
+          </div>
+        </>}
+        <div style={{fontSize:'11.5px',color:'#6B5F55',fontWeight:500,marginBottom:'6px'}}>Grupo complementar</div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px',marginBottom:'6px'}}>
+          {anC.map(d=>{const s=anSel.includes(d.id);const dis=!s&&anSel.length>=2;return(
+            <div key={d.id} className={`disc-chip${s?' sel':''}`} style={{opacity:dis?.5:1,cursor:dis?'not-allowed':'pointer'}} onClick={()=>!dis&&togAn(d.id)}>
+              <input type="checkbox" checked={s} readOnly style={{width:'14px',height:'14px',accentColor:'#1B2E58',flexShrink:0}}/>
+              <span style={{fontSize:'12px',fontWeight:500,color:'#0C1B42',flex:1,lineHeight:1.3}}>{d.name}</span>
+              <TL tp={d.tp}/>
+            </div>
+          );})}
+        </div>
+        {anSel.length===2&&anB.length>0&&!hasB&&<p style={{fontSize:'11.5px',color:'#D97706',marginBottom:'4px'}}>⚠ Seleciona pelo menos 1 do grupo principal.</p>}
+        {anSel.length===2&&(hasB||anB.length===0)&&<p style={{fontSize:'11.5px',color:'#15803D',marginBottom:'4px'}}>✓ 2 anuais selecionadas.</p>}
+        {anSel.length<2&&<p style={{fontSize:'11.5px',color:'#A09589',marginBottom:'4px'}}>Seleciona {2-anSel.length} mais.</p>}
+        <div style={{display:'flex',justifyContent:'space-between',marginTop:'22px'}}>
+          <button className="btn btn-ghost" onClick={()=>setStep(1)}>← Voltar</button>
+          <button className="btn btn-primary" disabled={biSel.length<2||anSel.length<2} onClick={()=>goStep(3)}>Continuar →</button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Step 3 ── */
+  function S3(){
+    const opts=allDiscs.filter(d=>d.hx&&!d.mand);
+    return(
+      <div className="fade">
+        <h2 style={{fontFamily:"'EB Garamond',serif",fontSize:'26px',fontWeight:600,color:'#0C1B42',marginBottom:'4px'}}>Exames Nacionais</h2>
+        <p style={{color:'#7B6F61',fontSize:'13px',marginBottom:'14px'}}>Português é obrigatório. Seleciona os outros exames que realizaste.</p>
+        <div className="ibox amber" style={{marginBottom:'8px'}}>
+          <strong>Fórmula (Portaria 278/2023):</strong> CFD = arred((7,5×CIF + 2,5×Exame)/10)<br/>
+          <span style={{opacity:.85}}>Peso interno: <strong>75%</strong> · Peso exame: <strong>25%</strong></span>
+        </div>
+        <div className="ibox blue" style={{marginBottom:'20px'}}>
+          <strong>Média Final (CFC)</strong> = [3×Σtri + 2×Σbi + 1×Σan] / [3n_tri + 2n_bi + n_an]
+        </div>
+        <div className="sec">Exame obrigatório</div>
+        <div style={{display:'flex',alignItems:'center',gap:'10px',padding:'11px 13px',borderRadius:'9px',border:'1.5px solid #FECACA',background:'#FFF8F8',marginBottom:'18px'}}>
+          <span className="tag t-red">obrigatório</span>
+          <span style={{fontWeight:600,color:'#0C1B42',fontSize:'13.5px',flex:1}}>Português</span>
+          <span style={{fontSize:'11px',color:'#C0392B'}}>exame 12.º</span>
+        </div>
+        <div className="sec">Outros exames realizados</div>
+        {opts.length===0
+          ?<div style={{textAlign:'center',padding:'28px',background:'#F8F5EF',borderRadius:'11px',color:'#9B8F82',fontSize:'13px'}}>Nenhuma disciplina tem exame disponível.</div>
+          :<div style={{display:'flex',flexDirection:'column',gap:'7px'}}>
+            {opts.map(d=>{
+              const on=!!xSel[d.id];
+              return(
+                <label key={d.id} style={{display:'flex',alignItems:'center',gap:'10px',padding:'10px 13px',borderRadius:'9px',cursor:'pointer',
+                  border:`1.5px solid ${on?'#A07C18':'#DDD6CC'}`,background:on?'#FFFBF0':'#fff',transition:'all .14s',userSelect:'none'}}>
+                  <input type="checkbox" checked={on} onChange={()=>setXSel(e=>({...e,[d.id]:!e[d.id]}))}
+                    style={{width:'15px',height:'15px',accentColor:'#A07C18',cursor:'pointer',flexShrink:0}}/>
+                  <span style={{fontWeight:500,color:'#0C1B42',fontSize:'13px',flex:1}}>{d.name}</span>
+                  <TL tp={d.tp}/>
+                  <span className="tag t-exam">exame {d.xa}.º</span>
+                </label>
+              );
+            })}
+          </div>
+        }
+        <div style={{display:'flex',justifyContent:'space-between',marginTop:'22px'}}>
+          <button className="btn btn-ghost" onClick={()=>setStep(2)}>← Voltar</button>
+          <button className="btn btn-primary" onClick={()=>goStep(4)}>Continuar →</button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Step 4 ── */
+  function S4(){
+    const tris=calc.filter(d=>d.tp==='tri');
+    const bis =calc.filter(d=>d.tp==='bi');
+    const ans =calc.filter(d=>d.tp==='an');
+
+    // ── Verificação de condições de conclusão do secundário ──────────────
+    // Art.º 28.º da Portaria 226-A/2018 (redação dada pela Portaria 278/2023)
+    // e DL 62/2023 de 25 de julho:
+    // 1. CFD ≥ 10 em TODAS as disciplinas do plano de estudos
+    // 2. Nota de exame ≥ 8,5 valores (95 pontos) em cada exame realizado
+    //    (se exame < 8,5, a disciplina considera-se reprovada mesmo com CFD ≥ 10)
+    // 3. Realização de 3 exames nacionais: Português + 2 específicos
+    // Nota: CFC NÃO tem valor mínimo legal para conclusão.
+    const issues = [];
+    const examIssues = []; // exames com nota < 8.5
+    calc.forEach(d=>{
+      if(d.cfd!==null && d.cfd < 10) issues.push({name:d.name, cfd:d.cfd});
+      // Verificar nota mínima no exame: ≥ 8.5 valores
+      if(d.useExam && d.eg!==null && d.eg < 8.5){
+        examIssues.push({name:d.name, eg:d.eg});
+      }
+    });
+    const allIssues = [...issues, ...examIssues];
+    const numExams    = Object.values(xSel).filter(Boolean).length + 1; // +1 Português obrigatório
+    const examCountOk = numExams >= 3;
+    const conclusionOk = allIssues.length === 0 && examCountOk;
+    const allFilled = filled === allDiscs.length;
+
+    return(
+      <div className="fade">
+        {/* CFC badge */}
+        <div style={{background:'#1B2E58',borderRadius:'16px',padding:'22px 26px',marginBottom:'16px'}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'16px',flexWrap:'wrap'}}>
+            <div>
+              <div style={{color:'rgba(255,255,255,.45)',fontSize:'10px',fontWeight:700,textTransform:'uppercase',letterSpacing:'.9px',marginBottom:'5px'}}>Média Final (CFC)</div>
+              <div style={{fontFamily:"'EB Garamond',serif",fontSize:'62px',fontWeight:600,color:'#fff',lineHeight:1,letterSpacing:'-1px'}}>{mf!==null?mf:'—'}</div>
+              <div style={{color:'rgba(255,255,255,.38)',fontSize:'11px',marginTop:'4px'}}>{filled}/{allDiscs.length} disciplinas · ponderação tri×3, bi×2, an×1</div>
+            </div>
+            {mf!==null&&(
+              <div style={{background:'rgba(255,255,255,.07)',borderRadius:'11px',padding:'11px 16px',textAlign:'center',minWidth:'90px'}}>
+                <div style={{color:'rgba(255,255,255,.4)',fontSize:'10px',marginBottom:'2px'}}>menção</div>
+                <div style={{color:'#fff',fontWeight:600,fontFamily:"'EB Garamond',serif",fontSize:'18px'}}>
+                  {Number(mf)>=17?'Muito Bom':Number(mf)>=14?'Bom':Number(mf)>=10?'Suficiente':'Insuficiente'}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Condições de conclusão */}
+        {allFilled&&(
+          <div style={{marginBottom:'14px',border:`1.5px solid ${conclusionOk?'#BBF7D0':'#FECACA'}`,borderRadius:'11px',
+            background:conclusionOk?'#F0FDF4':'#FEF2F2',padding:'12px 15px'}}>
+            <div style={{fontWeight:700,fontSize:'13px',color:conclusionOk?'#15803D':'#DC2626',marginBottom:'8px'}}>
+              {conclusionOk
+                ? '✓ Reúne condições para concluir o Ensino Secundário'
+                : '⚠ Não reúne (ainda) todas as condições de conclusão'}
+            </div>
+            {/* Condição 1: CFD ≥ 10 em todas as disciplinas */}
+            {issues.length>0
+              ? <div style={{fontSize:'12px',color:'#DC2626',marginBottom:'4px'}}>✗ CFD &lt; 10 em: {issues.map(i=>`${i.name} (${i.cfd})`).join(', ')}</div>
+              : <div style={{fontSize:'12px',color:'#15803D',marginBottom:'4px'}}>✓ Todas as disciplinas aprovadas (CFD ≥ 10)</div>
+            }
+            {/* Condição 2: nota de exame ≥ 8,5 */}
+            {examIssues.length>0
+              ? <div style={{fontSize:'12px',color:'#DC2626',marginBottom:'4px'}}>✗ Nota de exame &lt; 8,5 em: {examIssues.map(i=>`${i.name} (${i.eg})`).join(', ')} — mínimo: 8,5 val. (art.º 28.º Port. 278/2023)</div>
+              : calc.some(d=>d.useExam&&d.eg!==null)
+                ? <div style={{fontSize:'12px',color:'#15803D',marginBottom:'4px'}}>✓ Todas as notas de exame ≥ 8,5 valores</div>
+                : null
+            }
+            {/* Condição 3: 3 exames */}
+            <div style={{fontSize:'12px',color:'#15803D',marginBottom:'4px'}}>✓ Exame de Português obrigatório incluído</div>
+            {!examCountOk
+              ? <div style={{fontSize:'12px',color:'#DC2626',marginBottom:'4px'}}>✗ Apenas {numExams-1} exame(s) opcional(is) — são necessários 2 além do Português</div>
+              : <div style={{fontSize:'12px',color:'#15803D',marginBottom:'4px'}}>✓ {numExams} exames no total (Português + {numExams-1} específicos)</div>
+            }
+            <div style={{fontSize:'11px',color:'#9B8F82',marginTop:'6px',lineHeight:1.5,borderTop:'1px solid #E2D8CC',paddingTop:'6px'}}>
+              Art.º 28.º Port. 226-A/2018 (red. Port. 278/2023) · DL 62/2023 · CFC não tem mínimo legal para conclusão.
+            </div>
+          </div>
+        )}
+        {!allFilled&&allDiscs.length>0&&(
+          <div style={{marginBottom:'14px'}}>
+            <div style={{display:'flex',justifyContent:'space-between',fontSize:'11px',color:'#9B8F82',marginBottom:'4px'}}>
+              <span>Preenchimento</span><span>{filled}/{allDiscs.length}</span>
+            </div>
+            <div style={{background:'#DDD6CC',borderRadius:'99px',height:'4px',overflow:'hidden'}}>
+              <div style={{background:'#1B2E58',borderRadius:'99px',height:'100%',width:`${allDiscs.length?filled/allDiscs.length*100:0}%`,transition:'width .3s'}}/>
+            </div>
+          </div>
+        )}
+
+        <div className="ibox amber" style={{marginBottom:'14px',fontSize:'12px'}}>
+          Notas entre <strong>0 e 20</strong>. Para concluir o secundário: CFD ≥ 10 em cada disciplina e <strong>nota de exame ≥ 8,5 valores</strong> (art.º 28.º Portaria 278/2023).
+        </div>
+
+        {tris.length>0&&<><div className="sec">Trienais — peso 3</div>{tris.map(d=><DiscRow key={d.id} d={d} grades={grades} setG={setG}/>)}</>}
+        {bis.length>0&&<><div className="sec" style={{marginTop:'14px'}}>Bienais — peso 2</div>{bis.map(d=><DiscRow key={d.id} d={d} grades={grades} setG={setG}/>)}</>}
+        {ans.length>0&&<><div className="sec" style={{marginTop:'14px'}}>Anuais — peso 1</div>{ans.map(d=><DiscRow key={d.id} d={d} grades={grades} setG={setG}/>)}</>}
+
+        <div style={{display:'flex',justifyContent:'space-between',marginTop:'20px',alignItems:'center',flexWrap:'wrap',gap:'8px'}}>
+          <button className="btn btn-ghost" onClick={()=>setStep(3)}>← Voltar</button>
+          <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
+            <button className="btn btn-ghost btn-sm" style={{color:'#B91C1C',borderColor:'#FECACA'}} onClick={reset}>↺ Recomeçar</button>
+            <button className="btn btn-ghost" onClick={enterSim}
+              style={{borderColor:'#C8A028',color:'#876010'}}>
+              📊 Simulador
+            </button>
+            <button className="btn btn-primary" onClick={()=>{setStep(6);setMaxStep(ms=>Math.max(ms,6));}}>Candidatura →</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Step 5 ── */
+  function S5(){
+    const tCFC=parseFloat(targetCFC);
+    const tValid=!isNaN(tCFC)&&tCFC>=10&&tCFC<=20;
+    const simNum=parseFloat(simCFC);
+    const gap=(tValid&&simCFC!==null)?Math.round((tCFC-simNum)*100)/100:null;
+    const lockedCount=simLocked.size;
+    const freeCount=calc.length-lockedCount;
+    const tris=calc.filter(d=>d.tp==='tri');
+    const bis =calc.filter(d=>d.tp==='bi');
+    const ans =calc.filter(d=>d.tp==='an');
+    return(
+      <div className="fade">
+        <h2 style={{fontFamily:"'EB Garamond',serif",fontSize:'26px',fontWeight:600,color:'#0C1B42',marginBottom:'4px'}}>Simulador de Média</h2>
+        <p style={{color:'#7B6F61',fontSize:'13px',marginBottom:'18px'}}>Fixa as disciplinas com notas já definidas e ajusta livremente as restantes.</p>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px',marginBottom:'16px'}}>
+          <div style={{background:'#F8F5EF',borderRadius:'12px',padding:'14px 16px',border:'1px solid #E2D8CC'}}>
+            <div className="sec" style={{marginBottom:'8px'}}>Média-alvo (10–20)</div>
+            <div style={{display:'flex',alignItems:'baseline',gap:'7px'}}>
+              <TargetInput value={targetCFC} onChange={setTargetCFC}/>
+              <span style={{fontSize:'12px',color:'#9B8F82'}}>/20</span>
+            </div>
+          </div>
+          <div style={{background:'#1B2E58',borderRadius:'12px',padding:'14px 16px'}}>
+            <div style={{fontSize:'10px',fontWeight:700,color:'rgba(255,255,255,.5)',textTransform:'uppercase',letterSpacing:'.7px',marginBottom:'8px'}}>Média simulada</div>
+            <div style={{fontFamily:"'EB Garamond',serif",fontSize:'42px',fontWeight:600,color:'#fff',lineHeight:1}}>{simCFC!==null?simCFC:'—'}</div>
+            {gap!==null&&(
+              <div style={{fontSize:'11px',marginTop:'5px',color:gap>=0?'#6EE7B7':'#FCA5A5',fontWeight:500}}>
+                {gap>=0?`+${gap.toFixed(2)} acima do objetivo`:`${Math.abs(gap).toFixed(2)} abaixo do objetivo`}
+              </div>
+            )}
+          </div>
+        </div>
+        {tValid&&lockedCount>0&&neededGrade!==null&&(
+          <div className={`ibox${neededGrade<10?' blue':neededGrade>20?' red':' green'}`} style={{marginBottom:'14px'}}>
+            {neededGrade<10
+              ?<>As disciplinas fixas já garantem a média de <strong>{tCFC}</strong>.</>
+              :neededGrade>20
+              ?<>Impossível atingir <strong>{tCFC}</strong> com as notas fixas atuais — as {freeCount} disciplinas livres precisariam de <strong>{neededGrade.toFixed(1)}</strong> (acima de 20).</>
+              :<>Para atingir <strong>{tCFC}</strong>, as <strong>{freeCount}</strong> disciplinas livres precisam de nota média de <strong style={{fontSize:'15px'}}>{neededGrade.toFixed(1)}</strong>.</>
+            }
+          </div>
+        )}
+        {tValid&&lockedCount===0&&<div className="ibox blue" style={{marginBottom:'14px'}}>Fixa pelo menos uma disciplina para calcular as notas necessárias.</div>}
+        {!tValid&&targetCFC!==''&&<div className="ibox amber" style={{marginBottom:'14px'}}>Introduz uma média-alvo entre 10 e 20.</div>}
+        <div style={{display:'flex',gap:'8px',marginBottom:'16px',flexWrap:'wrap'}}>
+          <div style={{background:'#FEF9EC',borderRadius:'7px',padding:'5px 11px',fontSize:'11px',color:'#876010',fontWeight:600,border:'1px solid #FDE68A'}}>{lockedCount} fixas</div>
+          <div style={{background:'#EEF1F9',borderRadius:'7px',padding:'5px 11px',fontSize:'11px',color:'#1B2E58',fontWeight:600,border:'1px solid #C3D0F0'}}>{freeCount} livres</div>
+          <button onClick={()=>setSimLocked(new Set())} style={{background:'#fff',border:'1px solid #DDD6CC',borderRadius:'7px',padding:'5px 11px',fontSize:'11px',cursor:'pointer',color:'#7B6F61'}}>Libertar todas</button>
+          <button onClick={()=>setSimLocked(new Set(calc.map(d=>d.id)))} style={{background:'#fff',border:'1px solid #DDD6CC',borderRadius:'7px',padding:'5px 11px',fontSize:'11px',cursor:'pointer',color:'#7B6F61'}}>Fixar todas</button>
+        </div>
+        {tris.length>0&&<><div className="sec">Trienais — peso 3</div>{tris.map(d=>(
+          <SimRow key={d.id} d={d} locked={simLocked.has(d.id)}
+            onToggle={()=>setSimLocked(s=>{const n=new Set(s);n.has(d.id)?n.delete(d.id):n.add(d.id);return n;})}
+            val={simVals[d.id]??10} onValChange={v=>setSimVals(s=>({...s,[d.id]:v}))}/>
+        ))}</>}
+        {bis.length>0&&<><div className="sec" style={{marginTop:'14px'}}>Bienais — peso 2</div>{bis.map(d=>(
+          <SimRow key={d.id} d={d} locked={simLocked.has(d.id)}
+            onToggle={()=>setSimLocked(s=>{const n=new Set(s);n.has(d.id)?n.delete(d.id):n.add(d.id);return n;})}
+            val={simVals[d.id]??10} onValChange={v=>setSimVals(s=>({...s,[d.id]:v}))}/>
+        ))}</>}
+        {ans.length>0&&<><div className="sec" style={{marginTop:'14px'}}>Anuais — peso 1</div>{ans.map(d=>(
+          <SimRow key={d.id} d={d} locked={simLocked.has(d.id)}
+            onToggle={()=>setSimLocked(s=>{const n=new Set(s);n.has(d.id)?n.delete(d.id):n.add(d.id);return n;})}
+            val={simVals[d.id]??10} onValChange={v=>setSimVals(s=>({...s,[d.id]:v}))}/>
+        ))}</>}
+        <div style={{display:'flex',justifyContent:'space-between',marginTop:'20px',alignItems:'center'}}>
+          <button className="btn btn-ghost" onClick={()=>setStep(4)}>← Notas</button>
+          <button className="btn btn-ghost btn-sm" style={{color:'#B91C1C',borderColor:'#FECACA'}} onClick={reset}>↺ Recomeçar</button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Step 6 state — App level ── */
+  const [cfcManual,    setCfcManual]    = useState('');
+  const [provas200,    setProvas200]    = useState([{pid:'',grade:'',weight:55}]);
+  const [pesoSec,      setPesoSec]      = useState(60);
+  const [preReqGrade,  setPreReqGrade]  = useState('');
+  const [preReqWeight, setPreReqWeight] = useState(0);
+  const [regra2025,    setRegra2025]    = useState(true);
+
+  /* ── Step 6: Nota de Candidatura ── */
+  function S6(){
+    const cfcFrom4  = mf!==null ? Math.round(parseFloat(mf)*10) : null;
+    const cfcVal    = cfcManual!=='' ? parseFloat(cfcManual) : cfcFrom4;
+    const totalWP   = provas200.reduce((s,p)=>s+Number(p.weight||0),0);
+    const totalW    = pesoSec + totalWP + preReqWeight;
+    const wOk       = totalW===100;
+    const minSec    = regra2025?40:50;
+    const minProva  = regra2025?45:35;
+    const secOk     = pesoSec>=minSec&&pesoSec<=65;
+    const provaOk   = totalWP>=minProva;
+    const secLeProva= pesoSec<=totalWP;
+    const provaCountOk = provas200.length>=1&&provas200.length<=3;
+
+    let nc=null;
+    if(wOk&&cfcVal!=null&&!isNaN(cfcVal)){
+      let v=pesoSec/100*cfcVal,ok=true;
+      provas200.forEach(p=>{const g=parseFloat(p.grade);if(isNaN(g)||!p.pid)ok=false;else v+=(Number(p.weight)||0)/100*g;});
+      if(preReqWeight>0){const g=parseFloat(preReqGrade);if(isNaN(g))ok=false;else v+=preReqWeight/100*g;}
+      if(ok)nc=Math.round(v*10)/10;
+    }
+
+    function updP(i,f,v){setProvas200(p=>{const a=[...p];a[i]={...a[i],[f]:v};return a;});}
+
+    return(
+      <div className="fade">
+        <h2 style={{fontFamily:"'EB Garamond',serif",fontSize:'26px',fontWeight:600,color:'#0C1B42',marginBottom:'4px'}}>Nota de Candidatura</h2>
+        <p style={{color:'#7B6F61',fontSize:'13px',marginBottom:'14px'}}>Calcula a nota de candidatura ao ensino superior (escala 0–200).</p>
+
+        {/* Regime */}
+        <div style={{display:'flex',gap:'8px',marginBottom:'14px',flexWrap:'wrap',alignItems:'center'}}>
+          <span style={{fontSize:'11.5px',color:'#7B6F61',fontWeight:600}}>Regime:</span>
+          {[{v:true,l:'2026 (CFC≥40%, PI≥45%, 1–3 provas)'},{v:false,l:'Anterior 2025 (CFC≥50%, PI≥35%)'}].map(r=>(
+            <label key={String(r.v)} style={{display:'flex',alignItems:'center',gap:'6px',cursor:'pointer',
+              padding:'5px 11px',borderRadius:'7px',fontSize:'12px',fontWeight:500,userSelect:'none',
+              border:`1.5px solid ${regra2025===r.v?'#1B2E58':'#DDD6CC'}`,
+              background:regra2025===r.v?'#EEF1F9':'#fff'}}>
+              <input type="radio" checked={regra2025===r.v} onChange={()=>setRegra2025(r.v)} style={{accentColor:'#1B2E58'}}/>
+              {r.l}
+            </label>
+          ))}
+        </div>
+
+        {/* NC panel */}
+        <div style={{background:'#1B2E58',borderRadius:'16px',padding:'20px 24px',marginBottom:'18px',
+          display:'flex',alignItems:'center',justifyContent:'space-between',gap:'16px',flexWrap:'wrap'}}>
+          <div>
+            <div style={{color:'rgba(255,255,255,.45)',fontSize:'10px',fontWeight:700,textTransform:'uppercase',letterSpacing:'.9px',marginBottom:'5px'}}>Nota de Candidatura (NC)</div>
+            <div style={{fontFamily:"'EB Garamond',serif",fontSize:'62px',fontWeight:600,lineHeight:1,letterSpacing:'-1px',
+              color:nc!==null?'#fff':'rgba(255,255,255,.3)'}}>{nc!==null?nc:'—'}</div>
+            <div style={{fontSize:'11px',color:'rgba(255,255,255,.4)',marginTop:'3px'}}>escala 0–200</div>
+          </div>
+          {nc!==null&&(
+            <div style={{background:'rgba(255,255,255,.08)',borderRadius:'11px',padding:'12px 16px',textAlign:'center',minWidth:'100px'}}>
+              <div style={{color:'rgba(255,255,255,.45)',fontSize:'10px',marginBottom:'3px'}}>equivalente</div>
+              <div style={{fontFamily:"'EB Garamond',serif",fontSize:'28px',fontWeight:600,color:'#fff'}}>{(nc/10).toFixed(1)}</div>
+              <div style={{fontSize:'10px',color:'rgba(255,255,255,.35)'}}>escala 0–20</div>
+            </div>
+          )}
+        </div>
+
+        {/* Validation */}
+        {!wOk&&<div className="ibox red" style={{marginBottom:'10px',fontSize:'12.5px'}}>Soma dos pesos: <strong>{totalW}%</strong> — deve ser exactamente <strong>100%</strong>.</div>}
+        {wOk&&!secOk&&<div className="ibox amber" style={{marginBottom:'10px',fontSize:'12.5px'}}>Peso do secundário deve ser ≥{minSec}% e ≤65%.</div>}
+        {wOk&&secOk&&!provaOk&&<div className="ibox amber" style={{marginBottom:'10px',fontSize:'12.5px'}}>Peso total das provas deve ser ≥{minProva}%.</div>}
+        {wOk&&secOk&&provaOk&&!secLeProva&&<div className="ibox amber" style={{marginBottom:'10px',fontSize:'12.5px'}}>Peso do secundário não pode ser superior ao das provas.</div>}
+        {wOk&&secOk&&provaOk&&secLeProva&&<div className="ibox green" style={{marginBottom:'10px',fontSize:'12.5px'}}>✓ Pesos válidos — soma 100%, restrições cumpridas.</div>}
+
+        {/* CFC */}
+        <div className="sec">Classificação Final do Secundário (CFC · escala 0–200)</div>
+        <div style={{background:'#F8F5EF',borderRadius:'11px',padding:'13px 16px',marginBottom:'14px',border:'1px solid #E2D8CC'}}>
+          <div style={{display:'flex',alignItems:'center',gap:'12px',flexWrap:'wrap'}}>
+            <div style={{flex:1,minWidth:'140px'}}>
+              {cfcFrom4!==null&&cfcManual===''&&<div style={{fontSize:'11px',color:'#15803D',marginBottom:'4px'}}>Auto-preenchido da pág. 4: {cfcFrom4}</div>}
+              <GInput200 value={cfcManual!==''?cfcManual:(cfcFrom4??'')} onChange={setCfcManual}/>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+              <span style={{fontSize:'12.5px',color:'#7B6F61',fontWeight:500}}>Peso:</span>
+              <WInput value={pesoSec} onChange={setPesoSec} min={minSec} max={65}/>
+              <span style={{fontSize:'13px',color:'#7B6F61'}}>%</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Provas */}
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'10px'}}>
+          <div className="sec" style={{margin:0}}>Provas de Ingresso (mín. 1, máx. 3 · DL jan/2026)</div>
+          {provas200.length<3&&<button className="btn-icon btn-sm" onClick={()=>setProvas200(p=>[...p,{pid:'',grade:'',weight:15}])} style={{fontSize:'12px'}}>+ Adicionar prova</button>}
+        </div>
+        {provas200.map((p,i)=>(
+          <div key={i} style={{background:'#FFFBF0',borderRadius:'11px',padding:'13px 16px',marginBottom:'10px',border:'1.5px solid #FDE68A'}}>
+            <div style={{display:'flex',alignItems:'flex-start',gap:'10px',flexWrap:'wrap'}}>
+              <div style={{flex:'1 1 200px',minWidth:'160px'}}>
+                <div style={{fontSize:'11px',color:'#876010',fontWeight:700,marginBottom:'4px',textTransform:'uppercase',letterSpacing:'.4px'}}>Prova {i+1}</div>
+                <select value={p.pid} onChange={e=>updP(i,'pid',e.target.value)}
+                  style={{width:'100%',padding:'7px 10px',border:'1.5px solid #D4C9B8',borderRadius:'8px',
+                    fontSize:'13px',fontFamily:'inherit',outline:'none',color:'#0C1B42',background:'#fff'}}>
+                  <option value="">— selecionar prova —</option>
+                  {PROVAS_INGRESSO.map(pr=><option key={pr.id} value={pr.id}>{pr.name} (cód. {pr.code})</option>)}
+                </select>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:'8px',flexShrink:0,paddingTop:'19px'}}>
+                <GInput200 value={p.grade} onChange={v=>updP(i,'grade',v)}/>
+                <span style={{fontSize:'12px',color:'#876010'}}>·</span>
+                <WInput value={Number(p.weight)} onChange={v=>updP(i,'weight',v)} min={15} max={60}/>
+                <span style={{fontSize:'12.5px',color:'#7B6F61'}}>%</span>
+                {provas200.length>1&&<button onClick={()=>setProvas200(p=>p.filter((_,j)=>j!==i))}
+                  style={{background:'none',border:'none',cursor:'pointer',color:'#B91C1C',fontSize:'18px',padding:'0 4px',lineHeight:1}}>×</button>}
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Pré-requisito */}
+        <div style={{marginBottom:'14px'}}>
+          <div style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'8px'}}>
+            <div className="sec" style={{margin:0}}>Pré-requisito / seriação</div>
+            <label style={{display:'flex',alignItems:'center',gap:'5px',cursor:'pointer',fontSize:'12px',color:'#7B6F61',fontWeight:500}}>
+              <input type="checkbox" checked={preReqWeight>0} onChange={e=>setPreReqWeight(e.target.checked?10:0)} style={{accentColor:'#1B2E58'}}/>
+              Incluir
+            </label>
+          </div>
+          {preReqWeight>0&&(
+            <div style={{background:'#F0FBF0',borderRadius:'11px',padding:'13px 16px',border:'1.5px solid #BBF7D0',
+              display:'flex',alignItems:'center',gap:'12px',flexWrap:'wrap'}}>
+              <span style={{fontSize:'12.5px',color:'#15803D',flex:1}}>Classificação (0–200)</span>
+              <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+                <GInput200 value={preReqGrade} onChange={setPreReqGrade}/>
+                <WInput value={preReqWeight} onChange={setPreReqWeight} min={0} max={15}/>
+                <span style={{fontSize:'12.5px',color:'#7B6F61'}}>%</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Formula */}
+        <div className="ibox blue" style={{marginBottom:'16px',fontSize:'12px',lineHeight:1.7}}>
+          <strong>NC</strong> = CFC×{pesoSec}% + {provas200.map((p,i)=>`PI${i+1}×${p.weight}%`).join(' + ')}{preReqWeight>0?` + PR×${preReqWeight}%`:''}<br/>
+          <span style={{opacity:.8}}>Escala 0–200 · arredondamento às décimas · DL 296-A/98, Portaria 181-D/2015 e DL jan/2026 (1–3 provas)</span>
+        </div>
+
+        <div style={{display:'flex',justifyContent:'space-between',marginTop:'20px',alignItems:'center'}}>
+          <button className="btn btn-ghost" onClick={()=>setStep(4)}>← Notas</button>
+          <button className="btn btn-ghost btn-sm" style={{color:'#B91C1C',borderColor:'#FECACA'}} onClick={reset}>↺ Recomeçar</button>
+          <button className="btn btn-primary" onClick={()=>{setStep(7);setMaxStep(ms=>Math.max(ms,7));}}>Cursos →</button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Step 7: Cursos Nacionais Públicos ── */
+  function S7(){
+    const cfcFrom4 = mf!==null ? Math.round(parseFloat(mf)*10) : null;
+    const cfcVal   = cfcManual!=='' ? parseFloat(cfcManual) : cfcFrom4;
+    const totalWP  = provas200.reduce((s,p)=>s+Number(p.weight||0),0);
+    const wOk      = (pesoSec + totalWP + preReqWeight)===100;
+    let ncVal=null;
+    if(wOk && cfcVal!=null && !isNaN(cfcVal)){
+      let v=pesoSec/100*cfcVal, ok=true;
+      provas200.forEach(p=>{const g=parseFloat(p.grade);if(isNaN(g)||!p.pid)ok=false;else v+=(Number(p.weight)||0)/100*g;});
+      if(preReqWeight>0){const g=parseFloat(preReqGrade);if(isNaN(g))ok=false;else v+=preReqWeight/100*g;}
+      if(ok) ncVal=Math.round(v*10)/10;
+    }
+
+    // nota reference for the selected phase
+    const nKey = phase===1 ? 'n' : 'n2';
+
+    function stOf(n){
+      if(ncVal===null||n===null||n===undefined) return 'uk';
+      if(ncVal>=n+5)  return 'ok';
+      if(ncVal>=n)    return 'brd';
+      if(ncVal>=n-5)  return 'cls';
+      return 'no';
+    }
+    const SC ={ok:'#15803D',brd:'#C8921F',cls:'#D97706',no:'#DC2626',uk:'#9CA3AF'};
+    const SB ={ok:'#F0FDF4',brd:'#FFFBEB',cls:'#FFFDE8',no:'#FEF2F2',uk:'#F8F5EF'};
+    const SL ={ok:'✓ Provável',brd:'⚡ Na linha',cls:'⚠ Perto',no:'✗ Abaixo',uk:'—'};
+
+    const univs=[...new Set(CURSOS_DB.map(c=>c.u))].sort();
+    const escolas=filterU?[...new Set(CURSOS_DB.filter(c=>c.u===filterU).map(c=>c.e))].sort():[];
+
+    const filtered=CURSOS_DB.filter(c=>
+      (!filterU||c.u===filterU) &&
+      (!filterE||c.e===filterE) &&
+      (!filterQ||c.c.toLowerCase().includes(filterQ.toLowerCase())||c.u.toLowerCase().includes(filterQ.toLowerCase()))
+    );
+
+    const sorted=[...filtered].sort((a,b)=>{
+      let va=a[sortCol==='n'?nKey:sortCol], vb=b[sortCol==='n'?nKey:sortCol];
+      const nullVal = sortDir===1 ? Infinity : -Infinity;
+      if(va==null) va=nullVal; if(vb==null) vb=nullVal;
+      if(typeof va==='string') return va.localeCompare(vb)*sortDir;
+      return (va-vb)*sortDir;
+    });
+
+    function toggleSort(col){
+      if(sortCol===col) setSortDir(d=>d*-1);
+      else {setSortCol(col); setSortDir(col==='c'||col==='u'?1:-1);}
+    }
+
+    function ColHd({col, label, right}){
+      const act=sortCol===col;
+      const arr=act?(sortDir===1?'↑':'↓'):'⇅';
+      return(
+        <th onClick={()=>toggleSort(col)}
+          style={{padding:'8px 10px',fontSize:'11px',fontWeight:700,userSelect:'none',
+            color:act?'#1B2E58':'#9B8F82',textTransform:'uppercase',letterSpacing:'.5px',
+            cursor:'pointer',whiteSpace:'nowrap',textAlign:right?'right':'left',
+            background:'#F8F5EF',borderBottom:act?'2px solid #C8A028':'2px solid #E2D8CC'}}>
+          {label} <span style={{fontSize:'10px',opacity:.7}}>{arr}</span>
+        </th>
+      );
+    }
+
+    const selected=CURSOS_DB.filter(c=>selCourses.includes(c.id));
+    const phaseLabel = phase===1 ? '1ª Fase' : '2ª Fase';
+    const phaseNote  = phase===1 ? 'nota mín. 1ª fase 2025' : 'nota mín. 2ª fase 2025';
+
+    return(
+      <div className="fade">
+        <h2 style={{fontFamily:"'EB Garamond',serif",fontSize:'26px',fontWeight:600,color:'#0C1B42',marginBottom:'4px'}}>Cursos Nacionais Públicos</h2>
+        <p style={{color:'#7B6F61',fontSize:'13px',marginBottom:'14px'}}>
+          Dados DGES CNA 2025. Compara a tua nota de candidatura com a nota mínima de cada fase.
+        </p>
+
+        {/* Fases + NC */}
+        <div style={{display:'flex',gap:'10px',marginBottom:'14px',flexWrap:'wrap'}}>
+          {/* Seletor de fase */}
+          <div style={{background:'#F5F1EB',borderRadius:'12px',padding:'5px',display:'flex',gap:'4px',flexShrink:0}}>
+            {[1,2].map(ph=>(
+              <button key={ph} onClick={()=>{setPhase(ph);setSortCol('n');setSortDir(-1);}}
+                style={{padding:'8px 18px',borderRadius:'9px',border:'none',cursor:'pointer',
+                  fontFamily:'inherit',fontWeight:600,fontSize:'13px',transition:'all .15s',
+                  background:phase===ph?'#1B2E58':'transparent',
+                  color:phase===ph?'#fff':'#7B6F61'}}>
+                {ph}ª Fase
+              </button>
+            ))}
+          </div>
+          {/* NC badge */}
+          <div style={{flex:1,minWidth:'220px',background:'#1B2E58',borderRadius:'12px',padding:'10px 16px',display:'flex',alignItems:'center',gap:'12px'}}>
+            <div>
+              <div style={{color:'rgba(255,255,255,.5)',fontSize:'10px',fontWeight:700,textTransform:'uppercase',letterSpacing:'.7px',marginBottom:'2px'}}>Nota de Candidatura</div>
+              <div style={{fontFamily:"'EB Garamond',serif",fontSize:'38px',fontWeight:600,lineHeight:1,color:ncVal!==null?'#fff':'rgba(255,255,255,.3)'}}>{ncVal!==null?ncVal:'—'}</div>
+            </div>
+            {ncVal===null && <div style={{fontSize:'12px',color:'rgba(255,255,255,.55)',lineHeight:1.5}}>Preenche a pág. 6 (Candidatura) para comparação automática.</div>}
+            {ncVal!==null&&(
+              <div style={{marginLeft:'auto',display:'flex',gap:'5px',flexWrap:'wrap',justifyContent:'flex-end'}}>
+                {[['ok','≥min+5','#15803D','#F0FDF4'],['brd','na linha','#C8921F','#FFFBEB'],['cls','<5pt','#D97706','#FFFDE8'],['no','abaixo','#DC2626','#FEF2F2']].map(([k,l,c,b])=>(
+                  <span key={k} style={{padding:'3px 7px',borderRadius:'5px',fontSize:'10px',fontWeight:600,background:b,color:c}}>{l}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginBottom:'8px'}}>
+          <select value={filterU} onChange={e=>{setFilterU(e.target.value);setFilterE('');}}
+            style={{padding:'8px 10px',border:'1.5px solid #D4C9B8',borderRadius:'9px',fontSize:'12.5px',fontFamily:'inherit',outline:'none',color:'#0C1B42',background:'#fff'}}>
+            <option value="">— Universidade: todas —</option>
+            {univs.map(u=><option key={u} value={u}>{u}</option>)}
+          </select>
+          <select value={filterE} onChange={e=>setFilterE(e.target.value)} disabled={!filterU}
+            style={{padding:'8px 10px',border:'1.5px solid #D4C9B8',borderRadius:'9px',fontSize:'12.5px',fontFamily:'inherit',outline:'none',color:filterU?'#0C1B42':'#B0A898',background:'#fff',opacity:filterU?1:.6}}>
+            <option value="">— Faculdade: todas —</option>
+            {escolas.map(e=><option key={e} value={e}>{e}</option>)}
+          </select>
+        </div>
+        <input type="text" value={filterQ} onChange={e=>setFilterQ(e.target.value)}
+          placeholder="Pesquisar por nome de curso ou universidade..."
+          style={{width:'100%',padding:'9px 13px',border:'1.5px solid #D4C9B8',borderRadius:'9px',fontSize:'13px',fontFamily:'inherit',outline:'none',color:'#0C1B42',background:'#fff',marginBottom:'8px'}}/>
+
+        {/* Sortable table */}
+        <div style={{border:'1px solid #E2D8CC',borderRadius:'11px',overflow:'hidden',marginBottom:'6px'}}>
+          <div style={{overflowX:'auto',maxHeight:'420px',overflowY:'auto'}}>
+            <table style={{width:'100%',borderCollapse:'collapse',fontSize:'12.5px'}}>
+              <thead style={{position:'sticky',top:0,zIndex:1}}>
+                <tr>
+                  <th style={{width:'30px',padding:'8px 10px',background:'#F8F5EF',borderBottom:'2px solid #E2D8CC'}}/>
+                  <ColHd col="c" label="Curso"/>
+                  <ColHd col="u" label="Universidade"/>
+                  <ColHd col="vagas26" label="Vagas 2026" right/>
+                  <ColHd col="vagas25" label="Vagas 2025" right/>
+                  <ColHd col="n" label={phaseLabel+' 2025'} right/>
+                  {ncVal!==null&&<th style={{width:'18px',padding:'8px 6px',background:'#F8F5EF',borderBottom:'2px solid #E2D8CC'}}/>}
+                </tr>
+              </thead>
+              <tbody>
+                {sorted.length===0
+                  ? <tr><td colSpan={ncVal?7:6} style={{textAlign:'center',padding:'28px',color:'#9B8F82',fontSize:'13px'}}>Nenhum curso encontrado.</td></tr>
+                  : sorted.map((c,idx)=>{
+                      const nota = c[nKey];
+                      const sel=selCourses.includes(c.id);
+                      const st=stOf(nota);
+                      return(
+                        <tr key={c.id}
+                          onClick={()=>setSelCourses(s=>s.includes(c.id)?s.filter(x=>x!==c.id):[...s,c.id])}
+                          style={{cursor:'pointer',background:sel?'#EEF1F9':idx%2===0?'#fff':'#FAFAF7',borderBottom:'1px solid #F0EDE6',transition:'background .1s'}}>
+                          <td style={{padding:'8px 10px',textAlign:'center'}}>
+                            <input type="checkbox" checked={sel} readOnly style={{width:'14px',height:'14px',accentColor:'#1B2E58',cursor:'pointer'}}/>
+                          </td>
+                          <td style={{padding:'8px 10px',maxWidth:'260px'}}>
+                            <div style={{fontWeight:sel?600:400,color:'#0C1B42',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{c.c}</div>
+                            <div style={{fontSize:'10.5px',color:'#A09589'}}>{c.g}{c.v?'':' ~'}</div>
+                          </td>
+                          <td style={{padding:'8px 10px',maxWidth:'220px'}}>
+                            <div style={{fontSize:'12px',color:'#5B5047',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{c.u}</div>
+                            <div style={{fontSize:'10.5px',color:'#A09589',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{c.e}</div>
+                          </td>
+                          <td style={{padding:'8px 10px',textAlign:'right',fontWeight:700,color:c.vagas26!=null?'#1B2E58':'#C8BFB0'}}>{c.vagas26!=null?c.vagas26:'—'}</td>
+                          <td style={{padding:'8px 10px',textAlign:'right',fontWeight:700,color:'#1B2E58'}}>{c.vagas25!=null?c.vagas25:'—'}</td>
+                          <td style={{padding:'8px 10px',textAlign:'right'}}>
+                            {nota!=null
+                              ? <span style={{fontWeight:700,fontFamily:"'EB Garamond',serif",fontSize:'16px',color:'#0C1B42'}}>{nota}</span>
+                              : <span style={{color:'#C8BFB0',fontSize:'12px'}}>—</span>}
+                          </td>
+                          {ncVal!==null&&<td style={{padding:'8px 6px',textAlign:'center'}}>{nota!=null&&<div style={{width:'9px',height:'9px',borderRadius:'50%',background:SC[st],margin:'0 auto'}}/>}</td>}
+                        </tr>
+                      );
+                    })
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div style={{fontSize:'11px',color:'#A09589',marginBottom:'14px'}}>
+          {sorted.length} cursos · ✓ = verificado DGES 2025 · ~ = estimativa · — = dados não disponíveis para esta fase · Vagas 2026: não publicadas
+        </div>
+
+        {/* Selected summary */}
+        {selected.length>0&&(
+          <div style={{marginBottom:'14px'}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'8px'}}>
+              <div className="sec" style={{margin:0}}>Selecionados ({selected.length}) · {phaseLabel}</div>
+              <button className="btn-icon btn-sm" onClick={()=>setSelCourses([])}>Limpar</button>
+            </div>
+            <div style={{border:'1px solid #E2D8CC',borderRadius:'11px',overflow:'hidden'}}>
+              {selected.map(c=>{
+                const nota=c[nKey];
+                const st=stOf(nota);
+                const diff=ncVal!==null&&nota!=null?Math.round((ncVal-nota)*10)/10:null;
+                return(
+                  <div key={c.id} style={{padding:'11px 14px',borderBottom:'1px solid #F0EDE6',background:SB[st]}}>
+                    <div style={{display:'flex',alignItems:'center',gap:'10px',flexWrap:'wrap'}}>
+                      <div style={{flex:1,minWidth:'130px'}}>
+                        <div style={{fontWeight:600,fontSize:'13px',color:'#0C1B42'}}>{c.c}</div>
+                        <div style={{fontSize:'11px',color:'#7B6F61'}}>{c.u} · {c.g}</div>
+                        <div style={{fontSize:'10.5px',color:'#A09589'}}>{c.e}{c.v?' ✓':' ~'}</div>
+                      </div>
+                      <div style={{textAlign:'right',flexShrink:0}}>
+                        <div style={{fontSize:'10px',color:'#A09589'}}>Vagas 2025</div>
+                        <div style={{fontWeight:700,color:'#1B2E58'}}>{c.vagas25!=null?c.vagas25:'—'}</div>
+                      </div>
+                      <div style={{textAlign:'right',flexShrink:0}}>
+                        <div style={{fontSize:'10px',color:'#A09589'}}>{phaseNote}</div>
+                        <div style={{fontFamily:"'EB Garamond',serif",fontSize:'22px',fontWeight:700,color:'#0C1B42',lineHeight:1}}>{nota!=null?nota:'—'}</div>
+                      </div>
+                      <div style={{textAlign:'right',flexShrink:0}}>
+                        <div style={{fontSize:'10px',color:'#A09589'}}>Dif. NC</div>
+                        <div style={{fontWeight:700,fontSize:'14px',color:SC[st]}}>{diff!==null?(diff>=0?'+'+diff:String(diff)):'—'}</div>
+                      </div>
+                      <span style={{padding:'4px 10px',borderRadius:'6px',fontSize:'11px',fontWeight:700,background:SC[st]+'22',color:SC[st]}}>{SL[st]}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        <div className="ibox amber" style={{fontSize:'12px',marginBottom:'14px',lineHeight:1.6}}>
+          Notas indicativas — podem variar entre anos. Verifica sempre em <strong>dges.gov.pt</strong>. A 2ª fase tem notas geralmente mais baixas por ter menos candidatos.
+        </div>
+
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:'20px'}}>
+          <button className="btn btn-ghost" onClick={()=>setStep(6)}>← Candidatura</button>
+          <button className="btn btn-ghost btn-sm" style={{color:'#B91C1C',borderColor:'#FECACA'}} onClick={reset}>↺ Recomeçar</button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Shell ── */
+  return(
+    <>
+      <header style={{background:'#1B2E58',borderBottom:'1px solid rgba(255,255,255,.06)'}}>
+        <div style={{maxWidth:'1100px',margin:'0 auto',padding:'16px 20px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <div>
+            <div style={{fontFamily:"'EB Garamond',serif",fontSize:'20px',fontWeight:600,color:'#fff',letterSpacing:'-.2px'}}>Média do Secundário</div>
+            <div style={{fontSize:'11px',color:'rgba(255,255,255,.4)',marginTop:'1px'}}>Calculadora · Portaria 278/2023</div>
+          </div>
+          {aInfo&&<div style={{background:'rgba(255,255,255,.1)',borderRadius:'7px',padding:'4px 10px',fontSize:'11px',color:'rgba(255,255,255,.75)',fontWeight:500}}>{aInfo.label}</div>}
+        </div>
+      </header>
+
+      {/* Step bar */}
+      <div style={{background:'#fff',borderBottom:'1px solid #E2D8CC',position:'sticky',top:0,zIndex:10}}>
+        <div style={{maxWidth:'1100px',margin:'0 auto',display:'flex',overflowX:'auto'}}>
+          {STEPS.map((s,i)=>{
+            const n=STEP_IDS[i]; // actual step value
+            const pos=i+1;       // display position 1-6
+            const ac=step===n||(n===4&&step===5); // Notas active when Simulador open
+            const dn = (maxStep > n) || (step===5 && n < 4); // completed steps show tick
+            const canClick = !ac && (n <= 4 ? n <= maxStep : maxStep >= 4);
+            function handleClick(){
+              if(!canClick) return;
+              if(n === 6){ setStep(6); setMaxStep(ms=>Math.max(ms,6)); }
+              else if(n === 7){ setStep(7); setMaxStep(ms=>Math.max(ms,7)); }
+              else setStep(n);
+            }
+            return(
+              <div key={n}
+                onClick={handleClick}
+                style={{padding:'12px 16px',fontSize:'12px',whiteSpace:'nowrap',fontWeight:ac?600:400,
+                  color:ac?'#0C1B42':dn?'#15803D':canClick?'#1B2E58':'#A09589',
+                  borderBottom:ac?'2px solid #C8A028':'2px solid transparent',
+                  display:'flex',alignItems:'center',gap:'5px',flexShrink:0,
+                  cursor:canClick?'pointer':'default',
+                  transition:'background .12s',
+                  borderRadius:'2px',
+                }}
+                onMouseEnter={e=>{if(canClick)e.currentTarget.style.background='#F5F1EB';}}
+                onMouseLeave={e=>{e.currentTarget.style.background='transparent';}}>
+                <span style={{width:'18px',height:'18px',borderRadius:'50%',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',
+                  fontSize:'9.5px',fontWeight:700,background:dn?'#DCFCE7':ac?'#1B2E58':'#EDE8E0',
+                  color:dn?'#15803D':ac?'#fff':'#A09589'}}>{dn?'✓':n}</span>
+                {s}
+              </div>
+            );
+          })}
+        </div>
+        <Toolbar/>
+      </div>
+
+      <main style={{maxWidth:'1100px',margin:'24px auto 60px',padding:'0 16px'}}>
+        <div className="card">
+          {step===1&&<S1/>}
+          {step===2&&<S2/>}
+          {step===3&&<S3/>}
+          {step===4&&<S4/>}
+          {step===5&&<S5/>}
+          {step===6&&<S6/>}
+          {step===7&&S7()}
+        </div>
+        <p style={{textAlign:'center',fontSize:'11px',color:'#A09589',marginTop:'14px',lineHeight:1.8}}>
+          CIF = arred(média notas anuais) · CFD com exame = arred((7,5×CIF+2,5×Exame)/10)<br/>
+          CFC = [3×Σtri + 2×Σbi + 1×Σan] / [3n_tri + 2n_bi + n_an] · Portaria 278/2023
+        </p>
+      </main>
+
+      {showAcerca&&(
+        <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,.45)',zIndex:200,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'}}
+          onClick={e=>{if(e.target===e.currentTarget)setShowAcerca(false);}}>
+          <div style={{background:'#fff',borderRadius:'16px',padding:'32px',maxWidth:'560px',width:'100%',maxHeight:'90vh',overflowY:'auto',boxShadow:'0 20px 60px rgba(0,0,0,.25)'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'20px'}}>
+              <div style={{fontFamily:"'EB Garamond',serif",fontSize:'22px',fontWeight:600,color:'#0C1B42'}}>Acerca desta Calculadora</div>
+              <button onClick={()=>setShowAcerca(false)} style={{background:'none',border:'none',cursor:'pointer',fontSize:'20px',color:'#9B8F82',lineHeight:1,padding:'0 0 0 12px'}}>✕</button>
+            </div>
+
+            <div style={{marginBottom:'20px',padding:'14px 16px',background:'#F8F5EF',borderRadius:'11px',borderLeft:'3px solid #C8A028'}}>
+              <div style={{fontSize:'11px',fontWeight:700,textTransform:'uppercase',letterSpacing:'.6px',color:'#876010',marginBottom:'6px'}}>Dedicatória</div>
+              <p style={{fontSize:'13.5px',color:'#3D3028',lineHeight:1.7,margin:0}}>
+                Esta calculadora foi criada com muito carinho para a minha filha — e para todos os jovens que, como ela, estão em condições de concluir o Ensino Secundário e prosseguir para o Ensino Superior. Que esta ferramenta vos ajude a planear o vosso percurso com mais clareza e confiança.
+              </p>
+            </div>
+
+            <div style={{marginBottom:'20px'}}>
+              <div style={{fontSize:'12px',fontWeight:700,color:'#0C1B42',marginBottom:'8px'}}>⚠ Aviso Legal (Disclaimer)</div>
+              <p style={{fontSize:'12.5px',color:'#5B5047',lineHeight:1.7,margin:'0 0 10px 0'}}>
+                Esta calculadora é disponibilizada <strong>a título informativo e meramente indicativo</strong>, sem qualquer garantia de exatidão, completude ou atualidade. Os cálculos baseiam-se na legislação em vigor à data de publicação (Portaria 278/2023 e DL 62/2023), mas as regras podem ser alteradas pelos organismos competentes sem aviso prévio.
+              </p>
+              <p style={{fontSize:'12.5px',color:'#5B5047',lineHeight:1.7,margin:'0 0 10px 0'}}>
+                As notas mínimas de acesso aos cursos são referentes ao <strong>Concurso Nacional de Acesso 2025 — 1.ª e 2.ª fase</strong>, obtidas a partir dos dados oficiais publicados pela DGES. Os valores de anos anteriores ou estimativas estão assinalados com (~) e podem não refletir as notas do próximo ano letivo.
+              </p>
+              <p style={{fontSize:'12.5px',color:'#5B5047',lineHeight:1.7,margin:0}}>
+                O autor não se responsabiliza por quaisquer decisões tomadas com base nesta ferramenta. Para informação oficial e vinculativa, consulta sempre o site da <strong>DGES</strong> em <a href="https://www.dges.gov.pt" target="_blank" rel="noreferrer" style={{color:'#1B2E58'}}>dges.gov.pt</a>.
+              </p>
+            </div>
+
+            <div style={{marginBottom:'20px',padding:'12px 14px',background:'#EEF1F9',borderRadius:'9px',fontSize:'12.5px',color:'#1B2E58'}}>
+              <strong>Base legal:</strong> Portaria 226-A/2018 (red. Portaria 278/2023 de 8 set.) · DL 62/2023 de 25 jul. · DL 296-A/98 (candidatura ao ensino superior)
+            </div>
+
+            <div style={{borderTop:'1px solid #E2D8CC',paddingTop:'16px',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'8px'}}>
+              <div style={{fontSize:'12px',color:'#9B8F82'}}>
+                Contacto: <a href="mailto:top@outlook.pt" style={{color:'#1B2E58',fontWeight:500}}>top@outlook.pt</a>
+              </div>
+              <button className="btn btn-primary btn-sm" onClick={()=>setShowAcerca(false)}>Fechar</button>
+            </div>
+          </div>
+        </div>
+      )}
+      <Toast msg={toast}/>
+      {saveModal!==null&&<SaveModal csvContent={saveModal} onClose={(saved)=>{setSaveModal(null);if(saved)showToast('Ficheiro guardado ✓');}}/>}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
